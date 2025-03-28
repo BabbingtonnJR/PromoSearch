@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="imagex/png" href="#">
+    <link rel="stylesheet" href="login.css">
+    <title>Login</title>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Fazer Login</h2>
+        <form action="login.php" method="POST">
+            <label for="txtUser">Usuário</label>
+            <input type="text" id="txtUser" name="txtUser" required>
+            
+            <label for="txtPsw">Senha</label>
+            <input type="password" id="txtPsw" name="txtPsw" required>
+
+            <br>
+            Esqueceu sua senha? <a href="#">Clique aqui!</a>
+            <br>
+            <br>
+            
+            <button type="submit">Entrar</button>
+        </form>
+        <br>
+        É um administrador? <a href="#">Clique aqui!</a>
+        <br>
+        <br>
+        É proprietário de uma loja? <a href="#">Clique aqui!</a>
+        <br>
+        <br>
+        Não tem conta? <a href="cadastro_user.html">Cadastre-se aqui!</a>
+    </div>
+</body>
+</html>
