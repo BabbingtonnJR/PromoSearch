@@ -1,3 +1,15 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['id'])) {
+    header("Location: login.html");
+    exit();
+}
+
+include "connection.php";
+?>
+
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>

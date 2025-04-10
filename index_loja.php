@@ -1,12 +1,12 @@
 <?php
-//session_start();
+session_start();
 
-//if (!isset($_SESSION['id'])) {
-    //header("Location: login.html");
-    //exit();
-//}
+if (!isset($_SESSION['id'])) {
+    header("Location: login.html");
+    exit();
+}
 
-//include "connection.php";
+include "connection.php";
 ?>
 
 <!DOCTYPE html>
