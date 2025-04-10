@@ -17,7 +17,7 @@
                     <button class="dropdown-btn">Menu</button>
                     <ul class="dropdown-content">
                         <li><a href="produtos.php">Produtos</a></li>
-                        <li><a href="#">Página 2</a></li>
+                        <li><a href="index_loja.php">Mapa</a></li>
                         <li><a href="#">Página 3</a></li>
                     </ul>
                 </li>
