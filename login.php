@@ -27,7 +27,7 @@ window.history.go(-1);
             exit();
     }
 
-    $stmt = $conn->prepare("SELECT id, nome, senha FROM Cliente WHERE login = ?");
+    $stmt = $conn->prepare("SELECT id, nome, senha FROM $tabela WHERE login = ?");
     $stmt->bind_param("s", $login);
     $stmt->execute();
     $stmt->store_result();

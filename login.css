@@ -23,6 +23,15 @@ body {
     text-align: center;
 }
 
+.logo {
+    margin-bottom: 5px;
+}
+
+.logo img {
+    max-width: 100px;
+    height: auto;
+}
+
 h2 {
     margin-bottom: 20px;
     color: #333;
