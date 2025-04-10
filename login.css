@@ -16,56 +16,89 @@ body {
 .login-container {
     width: 100%;
     max-width: 400px;
-    padding: 20px;
+    padding: 25px;
     background-color: #ffffff;
     border-radius: 10px;
-    box-shadow: 0 4px 8px gray;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     text-align: center;
-}
-
-.logo {
-    margin-bottom: 5px;
-}
-
-.logo img {
-    max-width: 100px;
-    height: auto;
 }
 
 h2 {
     margin-bottom: 20px;
     color: #333;
+    font-size: 22px;
 }
 
 label {
     display: block;
     text-align: left;
     font-size: 14px;
-    color: #666;
-    margin-bottom: 8px;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 6px;
 }
 
-input {
+input[type="text"],
+input[type="password"] {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid #666;
+    border: 1px solid #aaa;
     border-radius: 5px;
     font-size: 16px;
+    outline: none;
+    transition: border 0.3s;
+}
+
+input:focus {
+    border-color: #4599bb;
+}
+
+.radio-group {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.radio-group label {
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+.radio-group input[type="radio"] {
+    accent-color: #4599bb;
+    transform: scale(1.2);
 }
 
 button {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background-color: #4599bb;
     color: #fff;
     font-size: 16px;
+    font-weight: bold;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease, transform 0.2s;
 }
 
 button:hover {
     background-color: #346581;
+    transform: scale(1.03);
+}
+
+a {
+    color: #4599bb;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: #346581;
+    text-decoration: underline;
 }

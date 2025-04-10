@@ -17,10 +17,25 @@
             <label for="txtPsw">Senha</label>
             <input type="password" id="txtPsw" name="txtPsw" required>
 
+            <label>Tipo de Usuário:</label>
+            <div class="radio-group">
+                <label>
+                    <input type="radio" name="tipo_usuario" value="cliente" required>
+                    Cliente
+                </label>
+                <label>
+                    <input type="radio" name="tipo_usuario" value="loja">
+                    Loja
+                </label>
+                <label>
+                    <input type="radio" name="tipo_usuario" value="admin">
+                    Administrador
+                </label>
+            </div>
+
             <br>
             Esqueceu sua senha? <a href="#">Clique aqui!</a>
-            <br>
-            <br>
+            <br><br>
             
             <button type="submit">Entrar</button>
         </form>

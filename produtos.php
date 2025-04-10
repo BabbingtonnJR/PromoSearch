@@ -71,7 +71,6 @@
         <div class="products-list">
             <h2>Produtos Cadastrados</h2>
             <div class="product-grid">
-                <!-- Exemplo de produto - isso seria substituído pelo loop PHP que busca do banco de dados -->
                 <div class="product-card">
                     <div class="product-image">
                         <img src="https://via.placeholder.com/250" alt="Produto 1">
