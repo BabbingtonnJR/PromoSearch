@@ -1,23 +1,23 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['id'])) {
+if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.html");
     exit();
 }
 
 include "connection.php";
 
-$id = $_SESSION['id'];
+$id = $_SESSION['id_usuario'];
 
-$sql = "SELECT nome, sobrenome, endereco, numero_residencia, telefone, email FROM Cliente WHERE id = ?";
+$sql = "SELECT nome, endereco, numero, telefone, email FROM Usuario WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $stmt->store_result();
 
 if ($stmt->num_rows > 0) {
-    $stmt->bind_result($nome, $sobrenome, $endereco, $numresicencia, $telefone, $email);
+    $stmt->bind_result($nome, $endereco, $numresicencia, $telefone, $email);
     $stmt->fetch();
 } else {
     echo "Usuário não encontrado.";
@@ -26,15 +26,14 @@ if ($stmt->num_rows > 0) {
 
 if (isset($_POST['update'])) {
     $nome_novo = $_POST['nome'];
-    $sobrenome_novo = $_POST['sobrenome'];
     $endereco_novo = $_POST['endereco'];
-    $numresicencia_novo = $_POST['numero_residencia'];
+    $numresicencia_novo = $_POST['numero'];
     $telefone_novo = $_POST['telefone'];
     $email_novo = $_POST['email'];
 
-    $update_sql = "UPDATE Cliente SET nome = ?, sobrenome = ?, endereco = ?, numero_residencia = ?, telefone = ?, email = ? WHERE id = ?";
+    $update_sql = "UPDATE Usuario SET nome = ?, endereco = ?, numero = ?, telefone = ?, email = ? WHERE id = ?";
     $update_stmt = $conn->prepare($update_sql);
-    $update_stmt->bind_param("ssssssi", $nome_novo, $sobrenome_novo, $endereco_novo, $numresicencia_novo, $telefone_novo, $email_novo, $id);
+    $update_stmt->bind_param("sssssi", $nome_novo, $endereco_novo, $numresicencia_novo, $telefone_novo, $email_novo, $id);
 
     if ($update_stmt->execute()) {
 ?>
@@ -101,14 +100,11 @@ $conn->close();
             <label for="nome">Nome:</label>
             <input type="text" id="nome" name="nome" value="<?php echo $nome; ?>" required>
 
-            <label for="sobrenome">Sobrenome:</label>
-            <input type="text" id="sobrenome" name="sobrenome" value="<?php echo $sobrenome; ?>" required>
-
             <label for="endereco">Endereço:</label>
             <input type="text" id="endereco" name="endereco" value="<?php echo $endereco; ?>" required>
 
             <label for="numero_residencia">Número da Residência:</label>
-            <input type="text" id="numero_residencia" name="numero_residencia" value="<?php echo $numresicencia; ?>" required>
+            <input type="text" id="numero_residencia" name="numero" value="<?php echo $numresicencia; ?>" required>
 
             <label for="telefone">Telefone:</label>
             <input type="text" id="telefone" name="telefone" value="<?php echo $telefone; ?>" required>

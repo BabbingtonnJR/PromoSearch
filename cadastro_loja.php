@@ -2,11 +2,11 @@
 include "connection.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nome = trim($_POST['nome']);
-    $sobrenome = trim($_POST['sobrenome']);
+    $nome_loja = trim($_POST['nome_loja']);
+    $proprietario = trim($_POST['proprietario']);
     $endereco = trim($_POST['endereco']);
-    $numresidencia = trim($_POST['numresidencia']);
-    $cpf = preg_replace('/[^0-9]/', '', trim($_POST['cpf']));
+    $numloja = trim($_POST['numloja']);
+    $cnpj = preg_replace('/[^0-9]/', '', trim($_POST['cnpj']));
     $telefone = trim($_POST['telefone']);
     $email = trim($_POST['email']);
     $usuario = trim($_POST['usuario']);
@@ -39,34 +39,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
     
-    $sql_check_cpf = $conn->prepare("SELECT COUNT(*) FROM Cliente WHERE cpf = ?");
-    $sql_check_cpf->bind_param("s", $cpf);
-    $sql_check_cpf->execute();
-    $sql_check_cpf->bind_result($count_cpf);
-    $sql_check_cpf->fetch();
-    $sql_check_cpf->close();
+    $sql_check_cnpj = $conn->prepare("SELECT COUNT(*) FROM Loja WHERE cnpj = ?");
+    $sql_check_cnpj->bind_param("s", $cnpj);
+    $sql_check_cnpj->execute();
+    $sql_check_cnpj->bind_result($count_cnpj);
+    $sql_check_cnpj->fetch();
+    $sql_check_cnpj->close();
 
-    if ($count_cpf > 0) {
+    if ($count_cnpj > 0) {
 ?>
 <script>
-    alert('Erro: Este CPF já está cadastrado.');
+    alert('Erro: Este CNPJ já está cadastrado.');
     history.go(-1);
 </script>
 <?php
         exit();
     }
 
-    $nome_completo = $nome . ' ' . $sobrenome;
     $sql_usuario = $conn->prepare("INSERT INTO Usuario (login, senha, nome, email, telefone, endereco, numero) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $sql_usuario->bind_param("ssssssi", $usuario, $senha, $nome_completo, $email, $telefone, $endereco, $numresidencia);
+    $sql_usuario->bind_param("ssssssi", $usuario, $senha, $nome_loja, $email, $telefone, $endereco, $numloja);
     
     if ($sql_usuario->execute()) {
         $id_usuario = $conn->insert_id;
         
-        $sql_cliente = $conn->prepare("INSERT INTO Cliente (id_usuario, cpf) VALUES (?, ?)");
-        $sql_cliente->bind_param("is", $id_usuario, $cpf);
+        $sql_loja = $conn->prepare("INSERT INTO Loja (id_usuario, cnpj, proprietario) VALUES (?, ?, ?)");
+        $sql_loja->bind_param("iss", $id_usuario, $cnpj, $proprietario);
         
-        if ($sql_cliente->execute()) {
+        if ($sql_loja->execute()) {
 ?>
 <script>
     alert('Cadastro realizado com sucesso!');
@@ -76,13 +75,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
 ?>
 <script>
-    alert('Erro ao cadastrar cliente!');
+    alert('Erro ao cadastrar loja!');
     history.go(-1);
 </script>
 <?php
         }
         
-        $sql_cliente->close();
+        $sql_loja->close();
     } else {
 ?>
 <script>
