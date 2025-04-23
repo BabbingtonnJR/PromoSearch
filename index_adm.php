@@ -15,7 +15,7 @@ include "connection.php";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administrador - Página Inicial</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles_adm.css">
 </head>
 <body>
     <nav class="navbar">
@@ -28,7 +28,7 @@ include "connection.php";
                     <button class="dropdown-btn">Painel</button>
                     <ul class="dropdown-content">
                         <li><a href="gerenciar_usuarios.php">Gerenciar Usuários</a></li>
-                        <li><a href="#">Visualizar Denúncias</a></li>
+                        <li><a href="visualizar_denuncias.php">Visualizar Denúncias</a></li>
                         <li><a href="#">Histórico de Penalizações</a></li>
                     </ul>
                 </li>
