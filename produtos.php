@@ -33,7 +33,7 @@ include 'connection.php';
                     </ul>
                 </li>
                 <li class="profile">
-                    <a href="perfil.php">
+                    <a href="#">
                         <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil">
                     </a>
                 </li>
@@ -44,12 +44,13 @@ include 'connection.php';
     <div class="content">
         <div class="products-header">
             <h2>Promoções Cadastradas</h2>
+            <br>
             <a href="cadastrar_promocao.php" class="add-promotion-btn">Adicionar Promoção</a>
         </div>
+        <br>
         
         <div class="product-grid">
             <?php
-            // Fetch promotions from database
             $query = "SELECT * FROM Promocao";
             $result = mysqli_query($conn, $query);
             

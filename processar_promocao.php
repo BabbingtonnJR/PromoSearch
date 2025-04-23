@@ -9,14 +9,12 @@ if (!isset($_SESSION['id_usuario'])) {
 include "connection.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
     $nomeProduto = $_POST['nomeProduto'];
     $precoInicial = $_POST['precoInicial'];
     $precoPromocional = $_POST['precoPromocional'];
     $quantidade = $_POST['quantidade'];
     $tipo = $_POST['tipo'];
     
-    // Insert into database
     $query = "INSERT INTO Promocao (nomeProduto, precoInicial, precoPromocional, quantidade, tipo) 
               VALUES (?, ?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $query);
