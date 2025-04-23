@@ -33,7 +33,7 @@ include 'connection.php';
                     </ul>
                 </li>
                 <li class="profile">
-                    <a href="perfil.php">
+                    <a href="#">
                         <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil">
                     </a>
                 </li>
