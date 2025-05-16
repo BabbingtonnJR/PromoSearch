@@ -4,7 +4,7 @@ include "connection.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome_loja = trim($_POST['nome_loja']);
     $proprietario = trim($_POST['proprietario']);
-    $endereco = trim($_POST['endereco']);
+    $endereco = $_POST['endereco'];
     $numloja = trim($_POST['numloja']);
     $cnpj = preg_replace('/[^0-9]/', '', trim($_POST['cnpj']));
     $telefone = trim($_POST['telefone']);
