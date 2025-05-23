@@ -26,7 +26,7 @@ CREATE TABLE Cliente(
 CREATE TABLE Loja(
 	id INT NOT NULL AUTO_INCREMENT,
     id_usuario INT NOT NULL,
-    cnpj INT(14) NOT NULL,
+    cnpj VARCHAR(14) NOT NULL,
     proprietario VARCHAR(100),
     UNIQUE (cnpj),
     PRIMARY KEY (id),
