@@ -96,7 +96,6 @@ $result = $conn->query($sql);
                                 <div class="action-buttons">
                                     <?php if (!$row['estado']): ?>
                                         <a href="resolver_denuncia.php?id=<?= $row['denuncia_id'] ?>" class="btn btn-success">Resolver</a>
-                                        <a href="banir_usuario.php?denuncia_id=<?= $row['denuncia_id'] ?>" class="btn btn-danger">Banir</a>
                                     <?php else: ?>
                                         <span class="btn btn-primary" style="background-color: #95a5a6; cursor: default;">Resolvido</span>
                                     <?php endif; ?>

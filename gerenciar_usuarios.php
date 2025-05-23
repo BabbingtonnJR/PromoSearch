@@ -69,7 +69,7 @@ if (isset($_SESSION['message'])) {
                     </ul>
                 </li>
                 <li class="profile">
-                    <a href="perfil_admin.php">
+                    <a href="perfil_adm.php">
                         <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil Admin">
                     </a>
                 </li>

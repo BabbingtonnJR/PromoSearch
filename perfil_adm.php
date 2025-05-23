@@ -7,15 +7,35 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo'] !== 'Administrador') {
 }
 
 include "connection.php";
+
+$id = $_SESSION['id_usuario'];
+
+$sql = "SELECT nome FROM Usuario WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$stmt->store_result();
+
+if ($stmt->num_rows > 0) {
+    $stmt->bind_result($nome);
+    $stmt->fetch();
+} else {
+    echo "Usuário não encontrado.";
+    exit();
+}
+
+$stmt->close();
+$conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrador - Página Inicial</title>
-    <link rel="stylesheet" href="styles_adm.css">
+    <title>Perfil de Administrador</title>
+    <link rel="stylesheet" href="perfil.css">
 </head>
 <body>
     <nav class="navbar">
@@ -40,10 +60,20 @@ include "connection.php";
             </ul>
         </div>
     </nav>
-
-    <div class="content">
-        <h1>Painel Administrativo</h1>
-        <p>Bem-vindo, administrador. Use o menu acima para navegar entre as opções administrativas.</p>
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>Meu Perfil</h1>
     </div>
+    <div class="profile-content">
+        <div class="profile-photo">
+            <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Foto do Perfil">
+        </div>
+        <div class="profile-details">
+            <h2><?php echo $nome; ?></h2>
+        </div>
+    </div>
+</div>
+
+
 </body>
 </html>
