@@ -4,7 +4,7 @@ include "connection.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome_loja = trim($_POST['nome_loja']);
     $proprietario = trim($_POST['proprietario']);
-    $endereco = trim($_POST['endereco']);
+    $endereco = $_POST['endereco'];
     $numloja = trim($_POST['numloja']);
     $cnpj = preg_replace('/[^0-9]/', '', trim($_POST['cnpj']));
     $telefone = trim($_POST['telefone']);
@@ -60,38 +60,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql_usuario->bind_param("ssssssi", $usuario, $senha, $nome_loja, $email, $telefone, $endereco, $numloja);
     
     if ($sql_usuario->execute()) {
+
         $id_usuario = $conn->insert_id;
-        
+
         $sql_loja = $conn->prepare("INSERT INTO Loja (id_usuario, cnpj, proprietario) VALUES (?, ?, ?)");
         $sql_loja->bind_param("iss", $id_usuario, $cnpj, $proprietario);
-        
-        if ($sql_loja->execute()) {
+
+    }
+
+    if ($sql_loja->execute()) {
 ?>
 <script>
     alert('Cadastro realizado com sucesso!');
     location.href = 'login.html';
 </script>
 <?php
-        } else {
+    } else {
 ?>
 <script>
     alert('Erro ao cadastrar loja!');
     history.go(-1);
 </script>
 <?php
-        }
-        
-        $sql_loja->close();
-    } else {
-?>
-<script>
-    alert('Erro ao cadastrar usuário!');
-    history.go(-1);
-</script>
-<?php
     }
-    
-    $sql_usuario->close();
+
+    $sql_loja->close();
     $conn->close();
 }
+
 ?>
