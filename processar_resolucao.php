@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo'] !== 'Administrador' || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo'] !== 'Administrador' || $_SERVER['REQUEST_METHOD'] !== 'GET') {
     header("Location: login.html");
     exit();
 }

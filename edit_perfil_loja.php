@@ -72,3 +72,7 @@ $conn->close();
         <div class="logo">
             <h2>PromoSearch</h2>
         </div>
+    </div>
+</nav>
+</body>
+</html>

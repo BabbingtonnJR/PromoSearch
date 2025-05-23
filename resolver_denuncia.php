@@ -102,7 +102,7 @@ if (!$denuncia) {
                 </div>
             </div>
             
-            <form action="processar_resolucao.php" method="post" class="resolver-form">
+            <form action="processar_resolucao.php" method="POST" class="resolver-form">
                 <input type="hidden" name="denuncia_id" value="<?= $denuncia['denuncia_id'] ?>">
                 <input type="hidden" name="promocao_id" value="<?= $denuncia['promocao_id'] ?>">
                 <input type="hidden" name="usuario_id" value="<?= $denuncia['usuario_id'] ?>">

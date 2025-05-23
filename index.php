@@ -94,97 +94,138 @@ $conn->close();
         <div id="map"></div>
     </div>
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-   <script>
-    const map = L.map('map').setView([-23.5, -51.5], 6);
+<div id="formDenuncia" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.5); z-index:10001;">
+    <h3>Denunciar Loja</h3>
+    <form id="denunciaForm" method="POST" action="registrar_denuncia.php">
+        <input type="hidden" name="id_loja" id="id_loja">
+        <label for="descricao">Descrição:</label><br>
+        <textarea name="descricao" id="descricao" required rows="4" style="width:100%;"></textarea><br><br>
+        <button type="submit">Enviar</button>
+        <button type="button" onclick="document.getElementById('formDenuncia').style.display='none'">Cancelar</button>
+    </form>
+</div>
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://carto.com/">CARTO</a> | Dados do <a href="https://openstreetmap.org">OpenStreetMap</a>',
-        subdomains: 'abcd',
-        maxZoom: 19
-    }).addTo(map);
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+const map = L.map('map').setView([-23.5, -51.5], 6);
 
-    const lojas = <?php echo json_encode($lojas); ?>;
-    let userLat = null;
-    let userLon = null;
-    let lojaMarkers = [];
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://carto.com/">CARTO</a> | Dados do <a href="https://openstreetmap.org">OpenStreetMap</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+}).addTo(map);
 
-    function calcularDistancia(lat1, lon1, lat2, lon2) {
-        const R = 6371;
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = 
-            Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
-    }
+const lojas = <?php echo json_encode($lojas); ?>;
+let userLat = null;
+let userLon = null;
+let lojaMarkers = [];
 
-    async function geocodeEndereco(endereco) {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(endereco)}`;
-        const response = await fetch(url, {
-            headers: {
-                'User-Agent': 'PromoSearchApp/1.0 (email@example.com)',
-                'Referer': window.location.href
-            }
-        });
-        const data = await response.json();
-        if (data.length > 0) {
-            return {
-                lat: parseFloat(data[0].lat),
-                lon: parseFloat(data[0].lon)
-            };
-        }
-        return null;
-    }
+function calcularDistancia(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+}
 
-    async function atualizarMarcadores(raio) {
-        lojaMarkers.forEach(marker => map.removeLayer(marker));
-        lojaMarkers = [];
-
-        for (const loja of lojas) {
-            const enderecoCompleto = `${loja.endereco}, ${loja.numero}, Paraná, Brasil`;
-            const coords = await geocodeEndereco(enderecoCompleto);
-
-            if (coords && userLat !== null && userLon !== null) {
-                const distancia = calcularDistancia(userLat, userLon, coords.lat, coords.lon);
-                if (distancia <= raio) {
-                    const marker = L.marker([coords.lat, coords.lon])
-                        .addTo(map)
-                        .bindPopup(`<strong>${loja.nomeLoja}</strong><br>${enderecoCompleto}`);
-                    lojaMarkers.push(marker);
-                }
-            }
-        }
-    }
-
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-            userLat = position.coords.latitude;
-            userLon = position.coords.longitude;
-
-            const userMarker = L.marker([userLat, userLon])
-                .addTo(map)
-                .bindPopup("Você está aqui!")
-                .openPopup();
-
-            map.setView([userLat, userLon], 14);
-
-            const raioInicial = parseInt(document.getElementById('radiusRange').value);
-            atualizarMarcadores(raioInicial);
-        }, () => {
-            alert("Não foi possível detectar sua localização.");
-        });
-    } else {
-        alert("Geolocalização não é suportada pelo seu navegador.");
-    }
-
-    document.getElementById('radiusRange').addEventListener('input', function() {
-        const raio = parseInt(this.value);
-        document.getElementById('radiusValue').textContent = raio;
-        if (userLat !== null && userLon !== null) {
-            atualizarMarcadores(raio);
+async function geocodeEndereco(endereco) {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(endereco)}`;
+    const response = await fetch(url, {
+        headers: {
+            'User-Agent': 'PromoSearchApp/1.0 (email@example.com)',
+            'Referer': window.location.href
         }
     });
+    const data = await response.json();
+    if (data.length > 0) {
+        return {
+            lat: parseFloat(data[0].lat),
+            lon: parseFloat(data[0].lon)
+        };
+    }
+    return null;
+}
+
+function abrirFormularioDenuncia(nome, endereco, numero) {
+    document.getElementById('formDenuncia').style.cssText = "display: block !important;";
+
+    const loja = lojas.find(l =>
+        l.nomeLoja === nome &&
+        l.endereco === endereco &&
+        l.numero.toString() === numero.toString()
+    );
+
+    if (!loja) return alert("Loja não encontrada.");
+
+    fetch(`buscar_id_loja.php?endereco=${encodeURIComponent(endereco)}&numero=${encodeURIComponent(numero)}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.id_loja) {
+                document.getElementById('id_loja').value = data.id_loja;
+                document.getElementById('formDenuncia').style.display = 'block';
+            } else {
+                alert("Não foi possível localizar a loja.");
+            }
+        });
+}
+
+
+async function atualizarMarcadores(raio) {
+    lojaMarkers.forEach(marker => map.removeLayer(marker));
+    lojaMarkers = [];
+
+    for (const loja of lojas) {
+        const enderecoCompleto = `${loja.endereco}, ${loja.numero}, Paraná, Brasil`;
+        const coords = await geocodeEndereco(enderecoCompleto);
+
+        if (coords && userLat !== null && userLon !== null) {
+            const distancia = calcularDistancia(userLat, userLon, coords.lat, coords.lon);
+            if (distancia <= raio) {
+                const marker = L.marker([coords.lat, coords.lon])
+                    .addTo(map)
+                    .bindPopup(`
+                        <strong>${loja.nomeLoja}</strong><br>
+                        ${enderecoCompleto}<br>
+                        <button onclick="abrirFormularioDenuncia('${loja.nomeLoja}', '${loja.endereco}', '${loja.numero}')">Denunciar</button>
+                    `);
+                lojaMarkers.push(marker);
+            }
+        }
+    }
+}
+
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+        userLat = position.coords.latitude;
+        userLon = position.coords.longitude;
+
+        const userMarker = L.marker([userLat, userLon])
+            .addTo(map)
+            .bindPopup("Você está aqui!")
+            .openPopup();
+
+        map.setView([userLat, userLon], 14);
+
+        const raioInicial = parseInt(document.getElementById('radiusRange').value);
+        atualizarMarcadores(raioInicial);
+    }, () => {
+        alert("Não foi possível detectar sua localização.");
+    });
+} else {
+    alert("Geolocalização não é suportada pelo seu navegador.");
+}
+
+document.getElementById('radiusRange').addEventListener('input', function() {
+    const raio = parseInt(this.value);
+    document.getElementById('radiusValue').textContent = raio;
+    if (userLat !== null && userLon !== null) {
+        atualizarMarcadores(raio);
+    }
+});
 </script>
+</body>
+</html>
