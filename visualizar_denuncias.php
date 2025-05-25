@@ -48,7 +48,7 @@ $result = $conn->query($sql);
                 <li><a href="index_adm.php">Início</a></li>
                 <li><a href="visualizar_denuncias.php">Denúncias</a></li>
                 <li class="profile">
-                    <a href="perfil_admin.php">
+                    <a href="perfil_adm.php">
                         <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil Admin">
                     </a>
                 </li>

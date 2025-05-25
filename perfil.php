@@ -69,7 +69,7 @@ $conn->close();
                 <button class="dropdown-btn">Menu</button>
                 <ul class="dropdown-content">
                     <li><a href="index.php">Mapa</a></li>
-                    <li><a href="#">Página 2</a></li>
+                    <li><a href="logout.php">Sair</a></li>
                     <li><a href="#">Página 3</a></li>
                 </ul>
             </li>

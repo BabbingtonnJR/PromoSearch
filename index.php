@@ -8,9 +8,13 @@ if (!isset($_SESSION['id_usuario'])) {
 
 include "connection.php";
 
-$sql = "SELECT U.nome AS nomeLoja, U.endereco, U.numero
+$sql = "SELECT DISTINCT U.nome AS nomeLoja, U.endereco, U.numero, L.id AS id_loja
         FROM Loja L
-        JOIN Usuario U ON L.id_usuario = U.id";
+        JOIN Usuario U ON L.id_usuario = U.id
+        JOIN Historico H ON L.id = H.id_loja
+        JOIN ListaPromocao LP ON H.id_listaPromocao = LP.id
+        JOIN Promocao P ON LP.id_promocao = P.id
+        WHERE P.quantidade > 0";
 
 $result = $conn->query($sql);
 
@@ -70,8 +74,8 @@ $conn->close();
                     <button class="dropdown-btn">Menu</button>
                     <ul class="dropdown-content">
                         <li><a href="#">Mapa</a></li>
+                        <li><a href="logout.php">Sair</a></li>
                         <li><a href="#">Página 2</a></li>
-                        <li><a href="#">Página 3</a></li>
                     </ul>
                 </li>
                 <li class="profile">
@@ -185,16 +189,38 @@ async function atualizarMarcadores(raio) {
         if (coords && userLat !== null && userLon !== null) {
             const distancia = calcularDistancia(userLat, userLon, coords.lat, coords.lon);
             if (distancia <= raio) {
-                const marker = L.marker([coords.lat, coords.lon])
-                    .addTo(map)
-                    .bindPopup(`
-                        <strong>${loja.nomeLoja}</strong><br>
-                        ${enderecoCompleto}<br>
-                        <button onclick="abrirFormularioDenuncia('${loja.nomeLoja}', '${loja.endereco}', '${loja.numero}')">Denunciar</button>
-                    `);
-                lojaMarkers.push(marker);
+                const promocoes = await obterPromocoesDaLoja(loja.nomeLoja, loja.endereco, loja.numero);
+                
+                const promocoesAtivas = promocoes.filter(p => p.quantidade > 0);
+                
+                if (promocoesAtivas.length > 0) {
+                    let popupContent = `<strong>${loja.nomeLoja}</strong><br>${enderecoCompleto}<br>`;
+                    popupContent += '<h4>Promoções Ativas:</h4><ul>';
+                    
+                    promocoesAtivas.forEach(promo => {
+                        popupContent += `<li>${promo.nomeProduto} - De: R$ ${promo.precoInicial} Por: R$ ${promo.precoPromocional}</li>`;
+                    });
+                    
+                    popupContent += '</ul>';
+                    popupContent += `<button onclick="abrirFormularioDenuncia('${loja.nomeLoja}', '${loja.endereco}', '${loja.numero}')">Denunciar</button>`;
+                    
+                    const marker = L.marker([coords.lat, coords.lon])
+                        .addTo(map)
+                        .bindPopup(popupContent);
+                    lojaMarkers.push(marker);
+                }
             }
         }
+    }
+}
+async function obterPromocoesDaLoja(nomeLoja, endereco, numero) {
+    try {
+        const response = await fetch(`obter_promocoes_loja.php?nome=${encodeURIComponent(nomeLoja)}&endereco=${encodeURIComponent(endereco)}&numero=${encodeURIComponent(numero)}`);
+        const data = await response.json();
+        return data.promocoes || [];
+    } catch (error) {
+        console.error('Erro ao obter promoções:', error);
+        return [];
     }
 }
 

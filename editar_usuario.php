@@ -43,6 +43,9 @@ if ($result->num_rows === 0) {
 
 $user = $result->fetch_assoc();
 
+$query = "SELECT email FROM Usuario WHERE id = $user_id";
+$result_email = mysqli_query($conn, $query);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = trim($_POST['nome']);
     $email = trim($_POST['email']);
@@ -52,6 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Nome e email são obrigatórios.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Email inválido.";
+    } elseif (mysqli_num_rows($result) > 0) {
+        $error = "Email já está em uso.";
     } else {
         $update_sql = "UPDATE Usuario SET nome = ?, email = ? WHERE id = ?";
         $update_stmt = $conn->prepare($update_sql);

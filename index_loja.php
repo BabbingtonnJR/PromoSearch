@@ -64,7 +64,7 @@ $conn->close();
                     <ul class="dropdown-content">
                         <li><a href="produtos.php">Produtos</a></li>
                         <li><a href="index_loja.php">Mapa</a></li>
-                        <li><a href="#">Página 3</a></li>
+                        <li><a href="logout.php">Sair</a></li>
                     </ul>
                 </li>
                 <li class="profile">

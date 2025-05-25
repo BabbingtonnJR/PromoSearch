@@ -68,13 +68,13 @@ $conn->close();
             <li class="dropdown">
                 <button class="dropdown-btn">Menu</button>
                 <ul class="dropdown-content">
-                    <li><a href="index.php">Mapa</a></li>
-                    <li><a href="#">Página 2</a></li>
-                    <li><a href="#">Página 3</a></li>
+                    <li><a href="index_loja.php">Mapa</a></li>
+                    <li><a href="produtos.php">Produtos</a></li>
+                    <li><a href="logout.php">Sair</a></li>
                 </ul>
             </li>
             <li class="profile">
-                <a href="perfil.php">
+                <a href="perfil_loja.php">
                     <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil">
                 </a>
             </li>
@@ -102,7 +102,7 @@ $conn->close();
         <form method="POST" onsubmit="return confirmDeletion();">
             <button type="submit" name="delete" class="action-btn delete-btn">Deletar Conta</button>
         </form>
-        <a href="edit_perfil.php"><button class="action-btn edit-btn">Editar Perfil</button></a>
+        <a href="edit_perfil_loja.php"><button class="action-btn edit-btn">Editar Perfil</button></a>
     </div>
 </div>
 
