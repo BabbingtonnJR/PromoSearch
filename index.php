@@ -84,8 +84,8 @@ $conn->close();
                     <button class="dropdown-btn">Menu</button>
                     <ul class="dropdown-content">
                         <li><a href="#">Mapa</a></li>
+                        <li><a href="promocoes_salvas.php">Salvos</a></li>
                         <li><a href="logout.php">Sair</a></li>
-                        <li><a href="#">Página 2</a></li>
                     </ul>
                 </li>
                 <li class="profile">
@@ -204,7 +204,7 @@ async function atualizarMarcadores(raio) {
                 const promocoesAtivas = promocoes.filter(p => p.quantidade > 0);
                 
                 if (promocoesAtivas.length > 0) {
-                    let popupContent = `<strong>${loja.nomeLoja}</strong><br>${enderecoCompleto}<br>`;
+                    let popupContent = `<strong><a href="produtos_loja.php?id_loja=${loja.id_loja}" style="color:black; text-decoration:none;">${loja.nomeLoja}</a></strong><br>${enderecoCompleto}<br>`;
                     popupContent += '<h4>Promoções Ativas:</h4><ul>';
                     
                     promocoesAtivas.forEach(promo => {
@@ -223,6 +223,7 @@ async function atualizarMarcadores(raio) {
         }
     }
 }
+
 async function obterPromocoesDaLoja(nomeLoja, endereco, numero) {
     try {
         const response = await fetch(`obter_promocoes_loja.php?nome=${encodeURIComponent(nomeLoja)}&endereco=${encodeURIComponent(endereco)}&numero=${encodeURIComponent(numero)}`);
