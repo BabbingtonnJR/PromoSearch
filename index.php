@@ -61,6 +61,16 @@ $conn->close();
             z-index: 1000;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
+
+        ul li a{
+            font-family: arial;
+            text-decoration: none;
+            color: white;
+        }
+
+        li {
+            list-style-type: none;
+        }
     </style>
 </head>
 <body>

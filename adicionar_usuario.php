@@ -127,6 +127,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     </script>
+    <style>
+        ul li a{
+            font-family: arial;
+            text-decoration: none;
+            color: white;
+        }
+
+        li {
+            list-style-type: none;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">

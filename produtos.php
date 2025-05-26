@@ -17,6 +17,21 @@ include 'connection.php';
     <link rel="stylesheet" href="produtos.css">
     <title>Promoções</title>
     <style>
+        .add-promotion-btn {
+            background-color: #4CAF50;
+            text-decoration: none;
+            font-family: arial;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .add-promotion-btn:hover {
+            background-color: #45a049;
+        }
         .product-card.selected {
             border: 3px solid #4CAF50;
             box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
@@ -57,6 +72,20 @@ include 'connection.php';
 
         .product-actions {
             margin-top: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        ul li a{
+            font-family: arial;
+            text-decoration: none;
+            color: white;
+        }
+
+        li {
+            list-style-type: none;
         }
     </style>
 </head>

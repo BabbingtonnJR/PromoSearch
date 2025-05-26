@@ -37,6 +37,14 @@ $result = $conn->query($sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualizar Denúncias</title>
     <link rel="stylesheet" href="styles_adm.css">
+
+    <style>
+        ul li a{
+            font-family: arial;
+            text-decoration: none;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">

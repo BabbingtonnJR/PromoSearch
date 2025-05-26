@@ -50,6 +50,18 @@ $conn->close();
             border: 2px solid #333;
             border-radius: 8px;
         }
+
+        ul li a{
+            font-family: arial;
+            text-decoration: none;
+            color: white;
+        }
+
+        li {
+            list-style-type: none;
+        }
+
+        
     </style>
 </head>
 <body>

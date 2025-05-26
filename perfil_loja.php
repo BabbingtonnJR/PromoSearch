@@ -56,6 +56,18 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil de Usuário</title>
     <link rel="stylesheet" href="perfil.css">
+
+    <style>
+        ul li a{
+            font-family: arial;
+            text-decoration: none;
+            color: white;
+        }
+
+        li {
+            list-style-type: none;
+        }
+    </style>
 </head>
 <body>
 

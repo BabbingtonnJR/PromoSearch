@@ -65,6 +65,18 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="edit_perfil.css">
     <title>Editar Perfil</title>
+
+    <style>
+        ul li a{
+            font-family: arial;
+            text-decoration: none;
+            color: white;
+        }
+
+        li {
+            list-style-type: none;
+        }
+    </style>
 </head>
 <body>
 
@@ -78,7 +90,7 @@ $conn->close();
                 <button class="dropdown-btn">Menu</button>
                 <ul class="dropdown-content">
                     <li><a href="index.php">Mapa</a></li>
-                    <li><a href="#">Página 2</a></li>
+                    <li><a href="logout.php">Sair</a></li>
                     <li><a href="#">Página 3</a></li>
                 </ul>
             </li>

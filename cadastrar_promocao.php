@@ -16,6 +16,18 @@ include 'connection.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="produtos.css">
     <title>Cadastrar Promoção</title>
+
+    <style>
+        ul li a{
+            font-family: arial;
+            text-decoration: none;
+            color: white;
+        }
+
+        li {
+            list-style-type: none;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -29,11 +41,11 @@ include 'connection.php';
                     <ul class="dropdown-content">
                         <li><a href="produtos.php">Promoções</a></li>
                         <li><a href="index_loja.php">Mapa</a></li>
-                        <li><a href="#">Página 3</a></li>
+                        <li><a href="logout.php">Sair</a></li>
                     </ul>
                 </li>
                 <li class="profile">
-                    <a href="#">
+                    <a href="perfil_loja.php">
                         <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil">
                     </a>
                 </li>
