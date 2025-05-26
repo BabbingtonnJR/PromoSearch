@@ -5,7 +5,7 @@ CREATE TABLE Usuario(
 	id INT NOT NULL AUTO_INCREMENT,
     login VARCHAR(50) NOT NULL,
     senha VARCHAR(144) NOT NULL,
-	reset_token VARCHAR(64) NULL,
+    reset_token VARCHAR(64) NULL,
 	reset_expira DATETIME NULL,
     nome VARCHAR (100) NOT NULL,
     email VARCHAR(100) NOT NULL,
@@ -47,12 +47,14 @@ CREATE TABLE Administrador(
 
 CREATE TABLE Promocao(
 	id INT NOT NULL AUTO_INCREMENT,
+    id_loja INT NOT NULL,
     nomeProduto VARCHAR(50) NOT NULL,
     precoInicial DOUBLE NOT NULL,
     precoPromocional DOUBLE NOT NULL,
     quantidade INT NOT NULL,
     tipo VARCHAR(30) NOT NULL,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+    FOREIGN KEY (id_loja) REFERENCES Loja(id)
 );
 
 CREATE TABLE ListaPromocao(
@@ -73,9 +75,11 @@ CREATE TABLE Historico(
 
 CREATE TABLE PromocoesSalvas(
 	id INT NOT NULL AUTO_INCREMENT,
+    id_cliente INT NOT NULL,
     id_promocao INT NOT NULL,
 	PRIMARY KEY (id),
-    FOREIGN KEY (id_promocao) REFERENCES Promocao(id)
+    FOREIGN KEY (id_promocao) REFERENCES Promocao(id),
+    FOREIGN KEY(id_cliente) REFERENCES Cliente(id)
 );
 
 CREATE TABLE Denuncia(
