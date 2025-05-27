@@ -10,14 +10,14 @@ include "connection.php";
 
 $id = $_SESSION['id_usuario'];
 
-$sql = "SELECT nome FROM Usuario WHERE id = ?";
+$sql = "SELECT login FROM Usuario WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $stmt->store_result();
 
 if ($stmt->num_rows > 0) {
-    $stmt->bind_result($nome);
+    $stmt->bind_result($login);
     $stmt->fetch();
 } else {
     echo "Usuário não encontrado.";
@@ -82,7 +82,7 @@ $conn->close();
             <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Foto do Perfil">
         </div>
         <div class="profile-details">
-            <h2><?php echo $nome; ?></h2>
+            <h2><?php echo $login; ?></h2>
         </div>
     </div>
 </div>
