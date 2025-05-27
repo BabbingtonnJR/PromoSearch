@@ -81,7 +81,7 @@ $conn->close();
                 </li>
                 <li class="profile">
                 <a href="perfil_loja.php">
-                    <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil">
+                    <img src="exibir_foto.php" alt="Foto de Perfil" style="width: 40px; height: 40px; border-radius: 50%;">
                 </a>
             </li>
             </ul>

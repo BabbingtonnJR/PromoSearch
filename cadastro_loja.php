@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
     $usuario = trim($_POST['usuario']);
     $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
-    
+
     if ($_POST['senha'] !== $_POST['repetir_senha']) {
 ?>
 <script>
@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php
         exit();
     }
-    
+
     $sql_check = $conn->prepare("SELECT COUNT(*) FROM Usuario WHERE login = ? OR email = ?");
     $sql_check->bind_param("ss", $usuario, $email);
     $sql_check->execute();
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php
         exit();
     }
-    
+
     $sql_check_cnpj = $conn->prepare("SELECT COUNT(*) FROM Loja WHERE cnpj = ?");
     $sql_check_cnpj->bind_param("s", $cnpj);
     $sql_check_cnpj->execute();
@@ -56,36 +56,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    $sql_usuario = $conn->prepare("INSERT INTO Usuario (login, senha, nome, email, telefone, endereco, numero) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $sql_usuario->bind_param("ssssssi", $usuario, $senha, $nome_loja, $email, $telefone, $endereco, $numloja);
-    
-    if ($sql_usuario->execute()) {
+    $imagem_padrao = file_get_contents('perfil.png');
 
+    $sql_usuario = $conn->prepare("INSERT INTO Usuario (login, senha, nome, email, telefone, endereco, numero, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $sql_usuario->bind_param("ssssssis", $usuario, $senha, $nome_loja, $email, $telefone, $endereco, $numloja, $imagem_padrao);
+
+    if ($sql_usuario->execute()) {
         $id_usuario = $conn->insert_id;
 
         $sql_loja = $conn->prepare("INSERT INTO Loja (id_usuario, cnpj, proprietario) VALUES (?, ?, ?)");
         $sql_loja->bind_param("iss", $id_usuario, $cnpj, $proprietario);
 
-    }
-
-    if ($sql_loja->execute()) {
+        if ($sql_loja->execute()) {
 ?>
 <script>
     alert('Cadastro realizado com sucesso!');
     location.href = 'login.html';
 </script>
 <?php
-    } else {
+        } else {
 ?>
 <script>
     alert('Erro ao cadastrar loja!');
     history.go(-1);
 </script>
 <?php
+        }
+
+        $sql_loja->close();
+    } else {
+?>
+<script>
+    alert('Erro ao cadastrar usuário!');
+    history.go(-1);
+</script>
+<?php
     }
 
-    $sql_loja->close();
+    $sql_usuario->close();
     $conn->close();
 }
-
 ?>
