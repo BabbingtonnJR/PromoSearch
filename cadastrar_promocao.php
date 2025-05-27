@@ -27,6 +27,11 @@ include 'connection.php';
         li {
             list-style-type: none;
         }
+        
+        a {
+            font-family: arial;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -56,11 +61,7 @@ include 'connection.php';
     <div class="content">
         <div class="product-form">
             <h2>Cadastrar Nova Promoção</h2>
-            <form action="processar_promocao.php" method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="product-image">Imagem do Produto</label>
-                    <input type="file" id="product-image" name="product-image" accept="image/*">
-                </div>
+            <form action="processar_promocao.php" method="POST">
                 <div class="form-group">
                     <label for="nomeProduto">Nome do Produto</label>
                     <input type="text" id="nomeProduto" name="nomeProduto" required>

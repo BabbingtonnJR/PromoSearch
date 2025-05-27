@@ -32,14 +32,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if (mysqli_stmt_execute($stmt)) {
             $id_promocao = mysqli_insert_id($conn);
-
+            
             $queryLista = "INSERT INTO ListaPromocao (id_promocao) VALUES (?)";
             $stmtLista = mysqli_prepare($conn, $queryLista);
             mysqli_stmt_bind_param($stmtLista, "i", $id_promocao);
             
             if (mysqli_stmt_execute($stmtLista)) {
                 $id_listaPromocao = mysqli_insert_id($conn);
-            
+                
                 $queryHistorico = "INSERT INTO Historico (id_listaPromocao, id_loja) VALUES (?, ?)";
                 $stmtHistorico = mysqli_prepare($conn, $queryHistorico);
                 mysqli_stmt_bind_param($stmtHistorico, "ii", $id_listaPromocao, $id_loja);
@@ -49,22 +49,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     exit();
                 } else {
                     header("Location: cadastrar_promocao.php?error=historico");
+                    exit();
                 }
-                mysqli_stmt_close($stmtHistorico);
             } else {
                 header("Location: cadastrar_promocao.php?error=lista");
+                exit();
             }
-            mysqli_stmt_close($stmtLista);
         } else {
             header("Location: cadastrar_promocao.php?error=promocao");
+            exit();
         }
-        mysqli_stmt_close($stmt);
     } else {
         header("Location: cadastrar_promocao.php?error=noloja");
+        exit();
     }
-    mysqli_stmt_close($stmtLoja);
-    mysqli_close($conn);
 } else {
     header("Location: cadastrar_promocao.php");
+    exit();
 }
 ?>

@@ -134,19 +134,26 @@ let userLat = null;
 let userLon = null;
 let lojaMarkers = [];
 
+// Cache de coordenadas para evitar múltiplas chamadas
+const coordenadasCache = {};
+
 function calcularDistancia(lat1, lon1, lat2, lon2) {
-    const R = 6371;
+    const R = 6371; // Raio da Terra em km
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = 
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
 }
 
 async function geocodeEndereco(endereco) {
+    if (coordenadasCache[endereco]) {
+        return coordenadasCache[endereco];
+    }
+
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(endereco)}`;
     const response = await fetch(url, {
         headers: {
@@ -154,15 +161,55 @@ async function geocodeEndereco(endereco) {
             'Referer': window.location.href
         }
     });
+
     const data = await response.json();
     if (data.length > 0) {
-        return {
+        const coords = {
             lat: parseFloat(data[0].lat),
             lon: parseFloat(data[0].lon)
         };
+        coordenadasCache[endereco] = coords;
+        return coords;
     }
     return null;
 }
+
+async function atualizarMarcadores(raio) {
+    lojaMarkers.forEach(marker => map.removeLayer(marker));
+    lojaMarkers = [];
+
+    for (const loja of lojas) {
+        const enderecoCompleto = `${loja.endereco}, ${loja.numero}, Paraná, Brasil`;
+        const coords = await geocodeEndereco(enderecoCompleto);
+
+        if (coords && userLat !== null && userLon !== null) {
+            const distancia = calcularDistancia(userLat, userLon, coords.lat, coords.lon);
+            if (distancia <= raio) {
+                const promocoes = await obterPromocoesDaLoja(loja.nomeLoja, loja.endereco, loja.numero);
+                const promocoesAtivas = promocoes.filter(p => p.quantidade > 0);
+
+                if (promocoesAtivas.length > 0) {
+                    let popupContent = `<strong><a href="produtos_loja.php?id_loja=${loja.id_loja}" style="color:black; text-decoration:none;">${loja.nomeLoja}</a></strong><br>${enderecoCompleto}<br>`;
+                    popupContent += '<h4>Promoções Ativas:</h4><ul>';
+
+                    promocoesAtivas.forEach(promo => {
+                        popupContent += `<li>${promo.nomeProduto} - De: R$ ${promo.precoInicial} Por: R$ ${promo.precoPromocional}</li>`;
+                    });
+
+                    popupContent += '</ul>';
+                    popupContent += `<strong><a href="produtos_loja.php?id_loja=${loja.id_loja}" style="color:black; text-decoration:none;">Ver Produtos</a></strong><br>`;
+                    popupContent += `<button onclick="abrirFormularioDenuncia('${loja.nomeLoja}', '${loja.endereco}', '${loja.numero}')">Denunciar</button>`;
+
+                    const marker = L.marker([coords.lat, coords.lon])
+                        .addTo(map)
+                        .bindPopup(popupContent);
+                    lojaMarkers.push(marker);
+                }
+            }
+        }
+    }
+}
+
 
 function abrirFormularioDenuncia(nome, endereco, numero) {
     document.getElementById('formDenuncia').style.cssText = "display: block !important;";
@@ -185,43 +232,6 @@ function abrirFormularioDenuncia(nome, endereco, numero) {
                 alert("Não foi possível localizar a loja.");
             }
         });
-}
-
-
-async function atualizarMarcadores(raio) {
-    lojaMarkers.forEach(marker => map.removeLayer(marker));
-    lojaMarkers = [];
-
-    for (const loja of lojas) {
-        const enderecoCompleto = `${loja.endereco}, ${loja.numero}, Paraná, Brasil`;
-        const coords = await geocodeEndereco(enderecoCompleto);
-
-        if (coords && userLat !== null && userLon !== null) {
-            const distancia = calcularDistancia(userLat, userLon, coords.lat, coords.lon);
-            if (distancia <= raio) {
-                const promocoes = await obterPromocoesDaLoja(loja.nomeLoja, loja.endereco, loja.numero);
-                
-                const promocoesAtivas = promocoes.filter(p => p.quantidade > 0);
-                
-                if (promocoesAtivas.length > 0) {
-                    let popupContent = `<strong><a href="produtos_loja.php?id_loja=${loja.id_loja}" style="color:black; text-decoration:none;">${loja.nomeLoja}</a></strong><br>${enderecoCompleto}<br>`;
-                    popupContent += '<h4>Promoções Ativas:</h4><ul>';
-                    
-                    promocoesAtivas.forEach(promo => {
-                        popupContent += `<li>${promo.nomeProduto} - De: R$ ${promo.precoInicial} Por: R$ ${promo.precoPromocional}</li>`;
-                    });
-                    
-                    popupContent += '</ul>';
-                    popupContent += `<button onclick="abrirFormularioDenuncia('${loja.nomeLoja}', '${loja.endereco}', '${loja.numero}')">Denunciar</button>`;
-                    
-                    const marker = L.marker([coords.lat, coords.lon])
-                        .addTo(map)
-                        .bindPopup(popupContent);
-                    lojaMarkers.push(marker);
-                }
-            }
-        }
-    }
 }
 
 async function obterPromocoesDaLoja(nomeLoja, endereco, numero) {

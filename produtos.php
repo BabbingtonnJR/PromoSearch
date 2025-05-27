@@ -7,6 +7,21 @@ if (!isset($_SESSION['id_usuario'])) {
 }
 
 include 'connection.php';
+
+$id_usuario = $_SESSION['id_usuario'];
+
+$query_loja = "SELECT id FROM Loja WHERE id_usuario = ?";
+$stmt_loja = mysqli_prepare($conn, $query_loja);
+mysqli_stmt_bind_param($stmt_loja, "i", $id_usuario);
+mysqli_stmt_execute($stmt_loja);
+$result_loja = mysqli_stmt_get_result($stmt_loja);
+
+if ($row_loja = mysqli_fetch_assoc($result_loja)) {
+    $id_loja = $row_loja['id'];
+} else {
+    echo "<p>Loja não encontrada.</p>";
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -130,7 +145,7 @@ include 'connection.php';
 
         <div class="product-grid">
             <?php
-            $query = "SELECT * FROM Promocao";
+            $query = "SELECT * FROM Promocao WHERE id_loja = $id_loja";
             $result = mysqli_query($conn, $query);
 
             if (mysqli_num_rows($result) > 0) {

@@ -63,6 +63,7 @@ if (isset($_SESSION['message'])) {
         li {
             list-style-type: none;
         }
+    
     </style>
 </head>
 <body>

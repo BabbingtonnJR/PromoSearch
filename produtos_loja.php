@@ -56,6 +56,15 @@ $conn->close();
     <title>Promoções da Loja</title>
     <link rel="stylesheet" href="styles.css">
     <style>
+        ul li a{
+            font-family: arial;
+            text-decoration: none;
+            color: white;
+        }
+
+        li {
+            list-style-type: none;
+        }
         .container {
             max-width: 800px;
             margin: 50px auto;

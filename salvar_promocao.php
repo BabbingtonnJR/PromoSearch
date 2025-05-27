@@ -36,12 +36,27 @@ if ($result->num_rows === 0) {
     $stmt = $conn->prepare("INSERT INTO PromocoesSalvas (id_promocao, id_cliente) VALUES (?, ?)");
     $stmt->bind_param("ii", $id_promocao, $id_cliente);
     if ($stmt->execute()) {
-        header("Location: promocoes_salvas.php");
+?>
+<script>
+    alert("Promoção Salva");
+    window.history.go(-1);
+</script>
+<?php
         exit();
     } else {
-        echo "Erro ao salvar promoção.";
+?>
+<script>
+    alert("Erro ao Salvar Promoção.");
+    window.history.go(-1);
+</script>
+<?php
     }
-} else {
-    echo "Promoção já salva.";
+    } else {
+?>
+<script>
+    alert("Promoção ja Salva.");
+    window.history.go(-1);
+</script>
+<?php
 }
 ?>
