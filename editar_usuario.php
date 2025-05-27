@@ -5,7 +5,6 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo'] !== 'Administrador') {
     header("Location: login.html");
     exit();
 }
-
 include "connection.php";
 
 if (!isset($_GET['id'])) {
@@ -43,29 +42,35 @@ if ($result->num_rows === 0) {
 
 $user = $result->fetch_assoc();
 
-$query = "SELECT email FROM Usuario WHERE id = $user_id";
-$result_email = mysqli_query($conn, $query);
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = trim($_POST['nome']);
+    $login = trim($_POST['login']);
     $email = trim($_POST['email']);
-    $tipo = $_POST['tipo'];
     
-    if (empty($nome) || empty($email)) {
-        $error = "Nome e email são obrigatórios.";
+    if (empty($nome) || empty($login) || empty($email)) {
+        $error = "Nome, login e email são obrigatórios.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Email inválido.";
-    } elseif (mysqli_num_rows($result) > 0) {
-        $error = "Email já está em uso.";
     } else {
-        $update_sql = "UPDATE Usuario SET nome = ?, email = ? WHERE id = ?";
-        $update_stmt = $conn->prepare($update_sql);
-        $update_stmt->bind_param("ssi", $nome, $email, $user_id);
-        $update_stmt->execute();
+        $check_sql = "SELECT id FROM Usuario WHERE (email = ? OR login = ?) AND id != ? ";
+        $check_stmt = $conn->prepare($check_sql);
+        $check_stmt -> bind_param("ssi", $email, $login, $user_id);
+        $check_stmt -> execute();
+        $check_result = $check_stmt -> get_result();
+
         
-        $_SESSION['message'] = "Usuário atualizado com sucesso!";
-        header("Location: gerenciar_usuarios.php");
-        exit();
+        if ($check_result->num_rows > 0) {
+            $error = "Login ou email já está em uso por outro usuário.";
+        } else {
+            $update_sql = "UPDATE Usuario SET nome = ?, login = ?, email = ? WHERE id = ?";
+            $update_stmt = $conn->prepare($update_sql);
+            $update_stmt->bind_param("sssi", $nome, $login, $email, $user_id);
+            $update_stmt->execute();
+    
+            $_SESSION['message'] = "Usuário atualizado com sucesso!";
+            header("Location: gerenciar_usuarios.php");
+            exit();
+        }
     }
 }
 ?>
@@ -130,8 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <div class="form-group">
                     <label for="login">Login:</label>
-                    <input type="text" id="login" name="login" value="<?= htmlspecialchars($user['login']) ?>" disabled>
-                    <small style="color: #666;">(Login não pode ser alterado)</small>
+                    <input type="text" id="login" name="login" value="<?= htmlspecialchars($user['login']) ?>">
                 </div>
                 
                 <div class="form-group">
@@ -139,17 +143,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
                 </div>
                 
-                <div class="form-group">
-                    <label for="tipo">Tipo de Usuário:</label>
-                    <select id="tipo" name="tipo" <?= $user['tipo'] === 'Administrador' && $_SESSION['id_usuario'] === $user['id'] ? 'disabled' : '' ?>>
-                        <option value="Cliente" <?= $user['tipo'] === 'Cliente' ? 'selected' : '' ?>>Cliente</option>
-                        <option value="Loja" <?= $user['tipo'] === 'Loja' ? 'selected' : '' ?>>Loja</option>
-                        <option value="Administrador" <?= $user['tipo'] === 'Administrador' ? 'selected' : '' ?>>Administrador</option>
-                    </select>
-                    <?php if ($user['tipo'] === 'Administrador' && $_SESSION['id_usuario'] === $user['id']): ?>
-                        <small style="color: #666;">(Você não pode alterar seu próprio tipo)</small>
-                    <?php endif; ?>
-                </div>
                 
                 <div class="form-actions">
                     <a href="gerenciar_usuarios.php" class="btn btn-secondary">Cancelar</a>
