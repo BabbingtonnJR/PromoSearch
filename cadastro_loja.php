@@ -1,4 +1,5 @@
 <?php
+session_start();
 include "connection.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -68,10 +69,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql_loja->bind_param("iss", $id_usuario, $cnpj, $proprietario);
 
         if ($sql_loja->execute()) {
+            $destino = (isset($_SESSION['tipo']) && $_SESSION['tipo'] === 'Administrador') 
+                       ? 'index_adm.php' 
+                       : 'login.html';
 ?>
 <script>
     alert('Cadastro realizado com sucesso!');
-    location.href = 'login.html';
+    location.href = '<?= $destino ?>';
 </script>
 <?php
         } else {
