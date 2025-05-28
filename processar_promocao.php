@@ -8,63 +8,79 @@ if (!isset($_SESSION['id_usuario'])) {
 
 include "connection.php";
 
+$id_usuario = $_SESSION['id_usuario'];
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nomeProduto = $_POST['nomeProduto'];
     $precoInicial = $_POST['precoInicial'];
     $precoPromocional = $_POST['precoPromocional'];
     $quantidade = $_POST['quantidade'];
     $tipo = $_POST['tipo'];
-    $id_usuario = $_SESSION['id_usuario'];
 
-    $queryLoja = "SELECT id FROM Loja WHERE id_usuario = ?";
-    $stmtLoja = mysqli_prepare($conn, $queryLoja);
-    mysqli_stmt_bind_param($stmtLoja, "i", $id_usuario);
-    mysqli_stmt_execute($stmtLoja);
-    $resultLoja = mysqli_stmt_get_result($stmtLoja);
+    $sqlLoja = "SELECT id FROM Loja WHERE id_usuario = ?";
+    $stmtLoja = $conn->prepare($sqlLoja);
+    $stmtLoja->bind_param("i", $id_usuario);
+    $stmtLoja->execute();
+    $stmtLoja->store_result();
 
-    if ($rowLoja = mysqli_fetch_assoc($resultLoja)) {
-        $id_loja = $rowLoja['id'];
+    if ($stmtLoja->num_rows > 0) {
+        $stmtLoja->bind_result($id_loja);
+        $stmtLoja->fetch();
 
-        $query = "INSERT INTO Promocao (id_loja, nomeProduto, precoInicial, precoPromocional, quantidade, tipo) 
-                  VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = mysqli_prepare($conn, $query);
-        mysqli_stmt_bind_param($stmt, "isddis", $id_loja, $nomeProduto, $precoInicial, $precoPromocional, $quantidade, $tipo);
+        $foto_binaria = null;
+        $tem_foto = false;
 
-        if (mysqli_stmt_execute($stmt)) {
-            $id_promocao = mysqli_insert_id($conn);
+        if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
+            $foto_tmp = $_FILES['imagem']['tmp_name'];
+            $foto_binaria = file_get_contents($foto_tmp);
+            $tem_foto = true;
+        } else {
+            $foto_binaria = file_get_contents('imagem.png');
+        }
 
-            $queryLista = "INSERT INTO ListaPromocao (id_promocao) VALUES (?)";
-            $stmtLista = mysqli_prepare($conn, $queryLista);
-            mysqli_stmt_bind_param($stmtLista, "i", $id_promocao);
-            
-            if (mysqli_stmt_execute($stmtLista)) {
-                $id_listaPromocao = mysqli_insert_id($conn);
-            
-                $queryHistorico = "INSERT INTO Historico (id_listaPromocao, id_loja) VALUES (?, ?)";
-                $stmtHistorico = mysqli_prepare($conn, $queryHistorico);
-                mysqli_stmt_bind_param($stmtHistorico, "ii", $id_listaPromocao, $id_loja);
-                
-                if (mysqli_stmt_execute($stmtHistorico)) {
-                    header("Location: produtos.php?success=1");
+        $sqlPromocao = "INSERT INTO Promocao (id_loja, nomeProduto, imagem, precoInicial, precoPromocional, quantidade, tipo) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmtPromocao = $conn->prepare($sqlPromocao);
+        $stmtPromocao->bind_param("issddis", $id_loja, $nomeProduto, $foto_binaria, $precoInicial, $precoPromocional, $quantidade, $tipo);
+
+        if ($stmtPromocao->execute()) {
+            $id_promocao = $stmtPromocao->insert_id;
+
+            $sqlLista = "INSERT INTO ListaPromocao (id_promocao) VALUES (?)";
+            $stmtLista = $conn->prepare($sqlLista);
+            $stmtLista->bind_param("i", $id_promocao);
+
+            if ($stmtLista->execute()) {
+                $id_listaPromocao = $stmtLista->insert_id;
+
+                $sqlHistorico = "INSERT INTO Historico (id_listaPromocao, id_loja) VALUES (?, ?)";
+                $stmtHistorico = $conn->prepare($sqlHistorico);
+                $stmtHistorico->bind_param("ii", $id_listaPromocao, $id_loja);
+
+                if ($stmtHistorico->execute()) {
+                    echo "<script>alert('Promoção cadastrada com sucesso!'); window.location.href='produtos.php';</script>";
                     exit();
                 } else {
-                    header("Location: cadastrar_promocao.php?error=historico");
+                    echo "<script>alert('Erro ao cadastrar no histórico'); window.location.href='cadastrar_promocao.php';</script>";
                 }
-                mysqli_stmt_close($stmtHistorico);
+
+                $stmtHistorico->close();
             } else {
-                header("Location: cadastrar_promocao.php?error=lista");
+                echo "<script>alert('Erro ao cadastrar na lista de promoções'); window.location.href='cadastrar_promocao.php';</script>";
             }
-            mysqli_stmt_close($stmtLista);
+
+            $stmtLista->close();
         } else {
-            header("Location: cadastrar_promocao.php?error=promocao");
+            echo "<script>alert('Erro ao cadastrar a promoção'); window.location.href='cadastrar_promocao.php';</script>";
         }
-        mysqli_stmt_close($stmt);
+
+        $stmtPromocao->close();
     } else {
-        header("Location: cadastrar_promocao.php?error=noloja");
+        echo "<script>alert('Loja não encontrada'); window.location.href='cadastrar_promocao.php';</script>";
     }
-    mysqli_stmt_close($stmtLoja);
-    mysqli_close($conn);
-} else {
-    header("Location: cadastrar_promocao.php");
+
+    $stmtLoja->close();
 }
+
+$conn->close();
 ?>

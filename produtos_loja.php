@@ -56,6 +56,15 @@ $conn->close();
     <title>Promoções da Loja</title>
     <link rel="stylesheet" href="styles.css">
     <style>
+        ul li a{
+            font-family: arial;
+            text-decoration: none;
+            color: white;
+        }
+
+        li {
+            list-style-type: none;
+        }
         .container {
             max-width: 800px;
             margin: 50px auto;
@@ -129,7 +138,7 @@ $conn->close();
             </li>
             <li class="profile">
                 <a href="perfil.php">
-                    <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil">
+                    <img src="exibir_foto.php" alt="Foto de Perfil" style="width: 40px; height: 40px; border-radius: 50%;">
                 </a>
             </li>
         </ul>
@@ -145,6 +154,7 @@ $conn->close();
         <table>
             <thead>
                 <tr>
+                    <th>Imagem</th>
                     <th>Produto</th>
                     <th>Preço Inicial</th>
                     <th>Preço Promocional</th>
@@ -155,6 +165,12 @@ $conn->close();
             <tbody>
                 <?php foreach ($promocoes as $promo): ?>
                     <tr>
+                        <td>
+                            <img src="exibir_imagem.php?id=<?= $promo['id_promocao'] ?>" 
+                                alt="<?= htmlspecialchars($promo['nomeProduto']) ?>" 
+                                style="width: 80px; height: 80px; object-fit: cover;">
+                        </td>
+
                         <td><?= htmlspecialchars($promo['nomeProduto']) ?></td>
                         <td>R$ <?= number_format($promo['precoInicial'], 2, ',', '.') ?></td>
                         <td>R$ <?= number_format($promo['precoPromocional'], 2, ',', '.') ?></td>

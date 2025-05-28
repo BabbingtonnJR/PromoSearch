@@ -28,6 +28,7 @@ $query_promocoes = "SELECT P.nomeProduto, P.precoInicial, P.precoPromocional, P.
                    JOIN ListaPromocao LP ON P.id = LP.id_promocao
                    JOIN Historico H ON LP.id = H.id_listaPromocao
                    WHERE H.id_loja = ? AND P.quantidade > 0";
+
 $stmt_promocoes = $conn->prepare($query_promocoes);
 $stmt_promocoes->bind_param("i", $id_loja);
 $stmt_promocoes->execute();

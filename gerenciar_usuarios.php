@@ -64,7 +64,7 @@ if (isset($_SESSION['message'])) {
             list-style-type: none;
         }
 
-        a {
+        a{
             font-family: arial;
             text-decoration: none;
             color: white;

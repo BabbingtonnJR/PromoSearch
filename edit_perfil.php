@@ -31,24 +31,30 @@ if (isset($_POST['update'])) {
     $telefone_novo = $_POST['telefone'];
     $email_novo = $_POST['email'];
 
-    $update_sql = "UPDATE Usuario SET nome = ?, endereco = ?, numero = ?, telefone = ?, email = ? WHERE id = ?";
-    $update_stmt = $conn->prepare($update_sql);
-    $update_stmt->bind_param("sssssi", $nome_novo, $endereco_novo, $numresicencia_novo, $telefone_novo, $email_novo, $id);
+    $foto_binaria = null;
+    $tem_foto = false;
+
+    if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+        $foto_tmp = $_FILES['foto']['tmp_name'];
+        $foto_binaria = file_get_contents($foto_tmp);
+        $tem_foto = true;
+    }
+
+    if ($tem_foto) {
+        $update_sql = "UPDATE Usuario SET nome = ?, endereco = ?, numero = ?, telefone = ?, email = ?, foto = ? WHERE id = ?";
+        $update_stmt = $conn->prepare($update_sql);
+        $update_stmt->bind_param("ssssssi", $nome_novo, $endereco_novo, $numresicencia_novo, $telefone_novo, $email_novo, $foto_binaria, $id);
+    } else {
+        $update_sql = "UPDATE Usuario SET nome = ?, endereco = ?, numero = ?, telefone = ?, email = ? WHERE id = ?";
+        $update_stmt = $conn->prepare($update_sql);
+        $update_stmt->bind_param("sssssi", $nome_novo, $endereco_novo, $numresicencia_novo, $telefone_novo, $email_novo, $id);
+    }
 
     if ($update_stmt->execute()) {
-?>
-<script>
-alert("Perfil atualizado com sucesso!");
-</script>
-<?php
-        header("Location: perfil.php");
+        echo "<script>alert('Perfil atualizado com sucesso!'); window.location.href='perfil.php';</script>";
         exit();
     } else {
-?>
-<script>
-alert("Erro ao atualizar o perfil");
-</script>
-<?php
+        echo "<script>alert('Erro ao atualizar o perfil');</script>";
     }
 
     $update_stmt->close();
@@ -65,14 +71,12 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="edit_perfil.css">
     <title>Editar Perfil</title>
-
     <style>
         ul li a{
             font-family: arial;
             text-decoration: none;
             color: white;
         }
-
         li {
             list-style-type: none;
         }
@@ -90,13 +94,13 @@ $conn->close();
                 <button class="dropdown-btn">Menu</button>
                 <ul class="dropdown-content">
                     <li><a href="index.php">Mapa</a></li>
+                    <li><a href="promocoes_salvas.php">Salvos</a></li>
                     <li><a href="logout.php">Sair</a></li>
-                    <li><a href="#">Página 3</a></li>
                 </ul>
             </li>
             <li class="profile">
                 <a href="perfil.php">
-                    <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil">
+                    <img src="exibir_foto.php" alt="Foto de Perfil" style="width: 40px; height: 40px; border-radius: 50%;">
                 </a>
             </li>
         </ul>
@@ -107,8 +111,11 @@ $conn->close();
     <div class="profile-header">
         <h1>Editar Perfil</h1>
     </div>
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         <div class="profile-form">
+            <label for="foto">Foto de Perfil:</label>
+            <input type="file" id="foto" name="foto" accept="image/*">
+
             <label for="nome">Nome:</label>
             <input type="text" id="nome" name="nome" value="<?php echo $nome; ?>" required>
 

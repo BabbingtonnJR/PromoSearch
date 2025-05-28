@@ -23,6 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['id'])) {
         $precoPromocional = $row['precoPromocional'];
         $quantidade = $row['quantidade'];
         $tipo = $row['tipo'];
+        $imagem = $row['imagem'];
     } else {
         header("Location: produtos.php?error=notfound");
         exit();
@@ -39,9 +40,35 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $quantidade = $_POST['quantidade'];
     $tipo = $_POST['tipo'];
 
-    $query = "UPDATE Promocao SET nomeProduto = ?, precoInicial = ?, precoPromocional = ?, quantidade = ?, tipo = ? WHERE id = ?";
+    $imagem_blob = null;
+    if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
+        $imagem_blob = file_get_contents($_FILES['imagem']['tmp_name']);
+    } else {
+        $query_imagem = "SELECT imagem FROM Promocao WHERE id = ?";
+        $stmt_imagem = mysqli_prepare($conn, $query_imagem);
+        mysqli_stmt_bind_param($stmt_imagem, "i", $id_promocao);
+        mysqli_stmt_execute($stmt_imagem);
+        $result_imagem = mysqli_stmt_get_result($stmt_imagem);
+        $row_imagem = mysqli_fetch_assoc($result_imagem);
+        $imagem_blob = $row_imagem['imagem'];
+        mysqli_stmt_close($stmt_imagem);
+    }
+
+    $query = "UPDATE Promocao 
+              SET nomeProduto = ?, precoInicial = ?, precoPromocional = ?, quantidade = ?, tipo = ?, imagem = ? 
+              WHERE id = ?";
     $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "sddisi", $nomeProduto, $precoInicial, $precoPromocional, $quantidade, $tipo, $id_promocao);
+    mysqli_stmt_bind_param($stmt, "sddisbi", 
+        $nomeProduto, 
+        $precoInicial, 
+        $precoPromocional, 
+        $quantidade, 
+        $tipo, 
+        $imagem_blob, 
+        $id_promocao
+    );
+
+    mysqli_stmt_send_long_data($stmt, 5, $imagem_blob);
 
     if (mysqli_stmt_execute($stmt)) {
         header("Location: produtos.php?updated=1");
@@ -54,6 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     mysqli_close($conn);
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -92,7 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </li>
                 <li class="profile">
                     <a href="perfil_loja.php">
-                        <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil">
+                        <img src="exibir_foto.php" alt="Foto de Perfil" style="width: 40px; height: 40px; border-radius: 50%;">
                     </a>
                 </li>
             </ul>
@@ -102,8 +130,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <div class="content">
         <div class="product-form">
             <h2>Editar Promoção</h2>
-            <form method="POST" action="editar_promocao.php">
+            <form method="POST" action="editar_promocao.php" enctype="multipart/form-data">
                 <input type="hidden" name="id_promocao" value="<?php echo htmlspecialchars($id_promocao); ?>">
+
+                <div class="form-group">
+                    <label for="imagem">Imagem do Produto</label>
+                    <input type="file" id="imagem" name="imagem" accept="image/*">
+                </div>
 
                 <div class="form-group">
                     <label for="nomeProduto">Nome do Produto</label>
@@ -137,11 +170,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </select>
                 </div>
 
+                <?php if (!empty($imagem)) : ?>
+                    <div class="form-group">
+                        <p>Imagem Atual:</p>
+                        <img src="exibir_imagem.php?id=<?php echo $id_promocao; ?>" alt="Imagem do Produto" style="max-width: 200px;">
+                    </div>
+                <?php endif; ?>
+
                 <div class="form-actions">
                     <button type="submit" class="btn btn-add">SALVAR ALTERAÇÕES</button>
                     <a href="produtos.php" class="btn btn-cancel">CANCELAR</a>
                 </div>
             </form>
+
         </div>
     </div>
 </body>

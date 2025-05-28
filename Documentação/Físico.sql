@@ -3,6 +3,7 @@ USE PromoSearch;
 
 CREATE TABLE Usuario(
 	id INT NOT NULL AUTO_INCREMENT,
+    foto LONGBLOB,
     login VARCHAR(50) NOT NULL,
     senha VARCHAR(144) NOT NULL,
     reset_token VARCHAR(64) NULL,
@@ -48,6 +49,7 @@ CREATE TABLE Administrador(
 CREATE TABLE Promocao(
 	id INT NOT NULL AUTO_INCREMENT,
     id_loja INT NOT NULL,
+    imagem LONGBLOB,
     nomeProduto VARCHAR(50) NOT NULL,
     precoInicial DOUBLE NOT NULL,
     precoPromocional DOUBLE NOT NULL,

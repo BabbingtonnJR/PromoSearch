@@ -27,6 +27,11 @@ include 'connection.php';
         li {
             list-style-type: none;
         }
+        
+        a {
+            font-family: arial;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -46,7 +51,7 @@ include 'connection.php';
                 </li>
                 <li class="profile">
                     <a href="perfil_loja.php">
-                        <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil">
+                        <img src="exibir_foto.php" alt="Foto de Perfil" style="width: 40px; height: 40px; border-radius: 50%;">
                     </a>
                 </li>
             </ul>
@@ -56,10 +61,11 @@ include 'connection.php';
     <div class="content">
         <div class="product-form">
             <h2>Cadastrar Nova Promoção</h2>
-            <form action="processar_promocao.php" method="POST" enctype="multipart/form-data">
+            <form action="processar_promocao.php" method="POST">
+
                 <div class="form-group">
-                    <label for="product-image">Imagem do Produto</label>
-                    <input type="file" id="product-image" name="product-image" accept="image/*">
+                    <label>Imagem do Produto:</label>
+                    <input type="file" name="imagem" accept="image/*"><br>
                 </div>
                 <div class="form-group">
                     <label for="nomeProduto">Nome do Produto</label>

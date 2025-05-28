@@ -38,6 +38,73 @@ $conn->close();
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
+
+        #formDenuncia {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fefefe;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10001;
+            width: 400px;
+            max-width: 90%;
+            font-family: Arial, sans-serif;
+        }
+
+        #formDenuncia h3 {
+            margin-top: 0;
+            text-align: center;
+            color: #333;
+        }
+
+        #formDenuncia p {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        #formDenuncia textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            resize: none;
+            font-size: 14px;
+        }
+
+        #formDenuncia button {
+            padding: 10px 18px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        #formDenuncia button[type="submit"] {
+            background-color: #d9534f;
+            color: white;
+        }
+
+        #formDenuncia button[type="submit"]:hover {
+            background-color: #c9302c;
+        }
+
+        #formDenuncia button[type="button"] {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        #formDenuncia button[type="button"]:hover {
+            background-color: #5a6268;
+        }
+
         #map {
             height: 600px;
             width: 100%;
@@ -90,7 +157,7 @@ $conn->close();
                 </li>
                 <li class="profile">
                     <a href="perfil.php">
-                        <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil">
+                        <img src="exibir_foto.php" alt="Foto de Perfil" style="width: 40px; height: 40px; border-radius: 50%;">
                     </a>
                 </li>
             </ul>
@@ -108,16 +175,18 @@ $conn->close();
         <div id="map"></div>
     </div>
 
-<div id="formDenuncia" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.5); z-index:10001;">
+<div id="formDenuncia">
     <h3>Denunciar Loja</h3>
+    <p id="nomeLojaDenuncia"></p>
     <form id="denunciaForm" method="POST" action="registrar_denuncia.php">
         <input type="hidden" name="id_loja" id="id_loja">
-        <label for="descricao">Descrição:</label><br>
-        <textarea name="descricao" id="descricao" required rows="4" style="width:100%;"></textarea><br><br>
-        <button type="submit">Enviar</button>
-        <button type="button" onclick="document.getElementById('formDenuncia').style.display='none'">Cancelar</button>
+        <label for="descricao">Descrição do problema:</label><br>
+        <textarea name="descricao" id="descricao" required rows="4" placeholder="Descreva o motivo da denúncia..."></textarea><br><br>
+        <button type="submit">Enviar Denúncia</button>
+        <button type="button" onclick="fecharFormularioDenuncia()">Cancelar</button>
     </form>
 </div>
+
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
@@ -134,19 +203,25 @@ let userLat = null;
 let userLon = null;
 let lojaMarkers = [];
 
+const coordenadasCache = {};
+
 function calcularDistancia(lat1, lon1, lat2, lon2) {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = 
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
 }
 
 async function geocodeEndereco(endereco) {
+    if (coordenadasCache[endereco]) {
+        return coordenadasCache[endereco];
+    }
+
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(endereco)}`;
     const response = await fetch(url, {
         headers: {
@@ -154,39 +229,18 @@ async function geocodeEndereco(endereco) {
             'Referer': window.location.href
         }
     });
+
     const data = await response.json();
     if (data.length > 0) {
-        return {
+        const coords = {
             lat: parseFloat(data[0].lat),
             lon: parseFloat(data[0].lon)
         };
+        coordenadasCache[endereco] = coords;
+        return coords;
     }
     return null;
 }
-
-function abrirFormularioDenuncia(nome, endereco, numero) {
-    document.getElementById('formDenuncia').style.cssText = "display: block !important;";
-
-    const loja = lojas.find(l =>
-        l.nomeLoja === nome &&
-        l.endereco === endereco &&
-        l.numero.toString() === numero.toString()
-    );
-
-    if (!loja) return alert("Loja não encontrada.");
-
-    fetch(`buscar_id_loja.php?endereco=${encodeURIComponent(endereco)}&numero=${encodeURIComponent(numero)}`)
-        .then(res => res.json())
-        .then(data => {
-            if (data && data.id_loja) {
-                document.getElementById('id_loja').value = data.id_loja;
-                document.getElementById('formDenuncia').style.display = 'block';
-            } else {
-                alert("Não foi possível localizar a loja.");
-            }
-        });
-}
-
 
 async function atualizarMarcadores(raio) {
     lojaMarkers.forEach(marker => map.removeLayer(marker));
@@ -200,20 +254,27 @@ async function atualizarMarcadores(raio) {
             const distancia = calcularDistancia(userLat, userLon, coords.lat, coords.lon);
             if (distancia <= raio) {
                 const promocoes = await obterPromocoesDaLoja(loja.nomeLoja, loja.endereco, loja.numero);
-                
                 const promocoesAtivas = promocoes.filter(p => p.quantidade > 0);
-                
+
                 if (promocoesAtivas.length > 0) {
                     let popupContent = `<strong><a href="produtos_loja.php?id_loja=${loja.id_loja}" style="color:black; text-decoration:none;">${loja.nomeLoja}</a></strong><br>${enderecoCompleto}<br>`;
                     popupContent += '<h4>Promoções Ativas:</h4><ul>';
-                    
+
                     promocoesAtivas.forEach(promo => {
                         popupContent += `<li>${promo.nomeProduto} - De: R$ ${promo.precoInicial} Por: R$ ${promo.precoPromocional}</li>`;
                     });
-                    
+
                     popupContent += '</ul>';
-                    popupContent += `<button onclick="abrirFormularioDenuncia('${loja.nomeLoja}', '${loja.endereco}', '${loja.numero}')">Denunciar</button>`;
-                    
+                    popupContent += `<strong><a href="produtos_loja.php?id_loja=${loja.id_loja}" style="color:black; text-decoration:none;">Ver Produtos</a></strong><br>`;
+                    popupContent += `<button 
+    style="padding: 10px 18px; margin-right: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; background-color: #d9534f; color: white; transition: background-color 0.3s ease;" 
+    onmouseover="this.style.backgroundColor='#c9302c'" 
+    onmouseout="this.style.backgroundColor='#d9534f'" 
+    onclick="abrirFormularioDenuncia('${loja.nomeLoja}', '${loja.endereco}', '${loja.numero}')">
+    Denunciar
+</button>`;
+
+
                     const marker = L.marker([coords.lat, coords.lon])
                         .addTo(map)
                         .bindPopup(popupContent);
@@ -223,6 +284,40 @@ async function atualizarMarcadores(raio) {
         }
     }
 }
+
+
+function abrirFormularioDenuncia(nome, endereco, numero) {
+    const loja = lojas.find(l =>
+        l.nomeLoja === nome &&
+        l.endereco === endereco &&
+        l.numero.toString() === numero.toString()
+    );
+
+    if (!loja) {
+        alert("Loja não encontrada.");
+        return;
+    }
+
+    document.getElementById('nomeLojaDenuncia').innerText = `Loja: ${nome}`;
+
+    fetch(`buscar_id_loja.php?endereco=${encodeURIComponent(endereco)}&numero=${encodeURIComponent(numero)}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.id_loja) {
+                document.getElementById('id_loja').value = data.id_loja;
+                document.getElementById('formDenuncia').style.display = 'block';
+            } else {
+                alert("Não foi possível localizar a loja.");
+            }
+        });
+}
+
+function fecharFormularioDenuncia() {
+    document.getElementById('formDenuncia').style.display = 'none';
+    document.getElementById('descricao').value = '';
+    document.getElementById('nomeLojaDenuncia').innerText = '';
+}
+
 
 async function obterPromocoesDaLoja(nomeLoja, endereco, numero) {
     try {
@@ -249,9 +344,16 @@ if (navigator.geolocation) {
 
         const raioInicial = parseInt(document.getElementById('radiusRange').value);
         atualizarMarcadores(raioInicial);
-    }, () => {
+
+    }, error => {
         alert("Não foi possível detectar sua localização.");
+        console.error(error);
+    }, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
     });
+
 } else {
     alert("Geolocalização não é suportada pelo seu navegador.");
 }

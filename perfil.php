@@ -81,13 +81,13 @@ $conn->close();
                 <button class="dropdown-btn">Menu</button>
                 <ul class="dropdown-content">
                     <li><a href="index.php">Mapa</a></li>
+                    <li><a href="promocoes_salvas.php">Salvos</a></li>
                     <li><a href="logout.php">Sair</a></li>
-                    <li><a href="#">Página 3</a></li>
                 </ul>
             </li>
             <li class="profile">
                 <a href="perfil.php">
-                    <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil">
+                    <img src="exibir_foto.php" alt="Foto de Perfil" style="width: 40px; height: 40px; border-radius: 50%;">
                 </a>
             </li>
         </ul>
@@ -100,7 +100,7 @@ $conn->close();
     </div>
     <div class="profile-content">
         <div class="profile-photo">
-            <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Foto do Perfil">
+            <img src="exibir_foto.php" alt="Foto de Perfil" style="width: 150px; height: 150px; border-radius: 50%;">
         </div>
         <div class="profile-details">
             <h2><?php echo $nome; ?></h2>

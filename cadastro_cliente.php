@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
     $usuario = trim($_POST['usuario']);
     $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
-    
+
     if ($_POST['senha'] !== $_POST['repetir_senha']) {
 ?>
 <script>
@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php
         exit();
     }
-    
+
     $sql_check = $conn->prepare("SELECT COUNT(*) FROM Usuario WHERE login = ? OR email = ?");
     $sql_check->bind_param("ss", $usuario, $email);
     $sql_check->execute();
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php
         exit();
     }
-    
+
     $sql_check_cpf = $conn->prepare("SELECT COUNT(*) FROM Cliente WHERE cpf = ?");
     $sql_check_cpf->bind_param("s", $cpf);
     $sql_check_cpf->execute();
@@ -57,15 +57,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $nome_completo = $nome . ' ' . $sobrenome;
-    $sql_usuario = $conn->prepare("INSERT INTO Usuario (login, senha, nome, email, telefone, endereco, numero) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $sql_usuario->bind_param("ssssssi", $usuario, $senha, $nome_completo, $email, $telefone, $endereco, $numresidencia);
-    
+    $imagem_padrao = file_get_contents('perfil.png');
+
+    $sql_usuario = $conn->prepare("INSERT INTO Usuario (login, senha, nome, email, telefone, endereco, numero, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $sql_usuario->bind_param("ssssssis", $usuario, $senha, $nome_completo, $email, $telefone, $endereco, $numresidencia, $imagem_padrao);
+
     if ($sql_usuario->execute()) {
         $id_usuario = $conn->insert_id;
-        
+
         $sql_cliente = $conn->prepare("INSERT INTO Cliente (id_usuario, cpf) VALUES (?, ?)");
         $sql_cliente->bind_param("is", $id_usuario, $cpf);
-        
+
         if ($sql_cliente->execute()) {
 ?>
 <script>
@@ -81,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </script>
 <?php
         }
-        
+
         $sql_cliente->close();
     } else {
 ?>
@@ -91,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </script>
 <?php
     }
-    
+
     $sql_usuario->close();
     $conn->close();
 }

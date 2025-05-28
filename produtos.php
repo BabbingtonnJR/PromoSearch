@@ -7,6 +7,21 @@ if (!isset($_SESSION['id_usuario'])) {
 }
 
 include 'connection.php';
+
+$id_usuario = $_SESSION['id_usuario'];
+
+$query_loja = "SELECT id FROM Loja WHERE id_usuario = ?";
+$stmt_loja = mysqli_prepare($conn, $query_loja);
+mysqli_stmt_bind_param($stmt_loja, "i", $id_usuario);
+mysqli_stmt_execute($stmt_loja);
+$result_loja = mysqli_stmt_get_result($stmt_loja);
+
+if ($row_loja = mysqli_fetch_assoc($result_loja)) {
+    $id_loja = $row_loja['id'];
+} else {
+    echo "<p>Loja não encontrada.</p>";
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -106,7 +121,7 @@ include 'connection.php';
                 </li>
                 <li class="profile">
                     <a href="perfil_loja.php">
-                        <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil">
+                        <img src="exibir_foto.php" alt="Foto de Perfil" style="width: 40px; height: 40px; border-radius: 50%;">
                     </a>
                 </li>
             </ul>
@@ -130,14 +145,14 @@ include 'connection.php';
 
         <div class="product-grid">
             <?php
-            $query = "SELECT * FROM Promocao";
+            $query = "SELECT * FROM Promocao WHERE id_loja = $id_loja";
             $result = mysqli_query($conn, $query);
 
             if (mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
                     echo '<div class="product-card" data-id="' . $row['id'] . '">';
                     echo '<div class="product-image">';
-                    echo '<img src="https://via.placeholder.com/250" alt="' . $row['nomeProduto'] . '">';
+                    echo '<img src="exibir_imagem.php?id=' . $row['id'] . '" alt="' . htmlspecialchars($row['nomeProduto']) . '" style="width: 250px; height: 250px; object-fit: cover;">';
                     echo '</div>';
                     echo '<div class="product-info">';
                     echo '<div class="product-name">' . $row['nomeProduto'] . '</div>';
