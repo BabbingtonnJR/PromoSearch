@@ -44,17 +44,35 @@ $result = $conn->query($sql);
             text-decoration: none;
             color: white;
         }
+
+        li {
+            list-style-type: none;
+        }
+        
+        a {
+            font-family: arial;
+            text-decoration: none;
+            color: white;
+        }   
     </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="navbar-container">
             <div class="logo">
-                <h2>Sistema Admin</h2>
+                <a href="index_adm.php"><h2>Painel Administrativo</h2></a>
             </div>
             <ul class="nav-links">
-                <li><a href="index_adm.php">Início</a></li>
-                <li><a href="visualizar_denuncias.php">Denúncias</a></li>
+                <li class="dropdown">
+                    <button class="dropdown-btn">Menu</button>
+                    <ul class="dropdown-content">
+                        <li><a href="gerenciar_usuarios.php">Gerenciar Usuários</a></li>
+                        <li><a href="adicionar_usuario.php">Adicionar Usuário</a></li>
+                        <li><a href="visualizar_denuncias.php">Visualizar Denúncias</a></li>
+                        <li><a href="historico_penalizacoes.php">Histórico de Penalizações</a></li>
+                        <li><a href="logout.php">Sair</a></li>
+                    </ul>
+                </li>
                 <li class="profile">
                     <a href="perfil_adm.php">
                         <img src="https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png" alt="Perfil Admin">
