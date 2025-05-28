@@ -4,6 +4,7 @@ USE PromoSearch;
 CREATE TABLE Usuario(
 	id INT NOT NULL AUTO_INCREMENT,
     foto LONGBLOB,
+    banido_ate DATE NULL,
     login VARCHAR(50) NOT NULL,
     senha VARCHAR(144) NOT NULL,
     reset_token VARCHAR(64) NULL,
