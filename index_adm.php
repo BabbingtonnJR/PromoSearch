@@ -7,7 +7,20 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo'] !== 'Administrador') {
 }
 
 include "connection.php";
+
+$sql = "SELECT COUNT(*) FROM Usuario";
+$totalUsuarios = $conn->query($sql)->fetch_row()[0];
+
+$sql = "SELECT COUNT(*) FROM Loja";
+$totalLojas = $conn->query($sql)->fetch_row()[0];
+
+$sql = "SELECT COUNT(*) FROM Denuncia WHERE estado = 0"; 
+$denunciasPendentes = $conn->query($sql)->fetch_row()[0];
+
+$sql = "SELECT COUNT(*) FROM Registro";
+$penalizacoesTotal = $conn->query($sql)->fetch_row()[0];
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -32,6 +45,78 @@ include "connection.php";
             font-family: arial;
             text-decoration: none;
             color: white;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 30px;
+        }
+
+        .card {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .card p {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 30px 0;
+        }
+
+        .quick-action-card {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+        }
+
+        .quick-action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            background-color: #f8f9fa;
+        }
+
+        .quick-action-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .quick-action-card .label {
+            font-size: 1.1rem;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -64,6 +149,38 @@ include "connection.php";
     <div class="content">
         <h1>Painel Administrativo</h1>
         <p>Bem-vindo, administrador. Use o menu acima para navegar entre as opções administrativas.</p>
+        <br><br>
+
+        <div class="quick-actions">
+            <a href="adicionar_usuario.php" class="quick-action-card">
+                <span class="icon">+</span>
+                <span class="label">Adicionar novo usuário</span>
+            </a>
+            <a href="visualizar_denuncias.php" class="quick-action-card">
+                <span class="icon">🕵️</span>
+                <span class="label">Visualizar denúncias pendentes</span>
+            </a>
+        </div>
+
+        <div class="dashboard-cards">
+            <div class="card">
+                <h3>Total de Usuários</h3>
+                <p><?php echo $totalUsuarios; ?></p>
+            </div>
+            <div class="card">
+                <h3>Total de Lojas</h3>
+                <p><?php echo $totalLojas; ?></p>
+            </div>
+            <div class="card">
+                <h3>Denúncias Pendentes</h3>
+                <p><?php echo $denunciasPendentes; ?></p>
+            </div>
+            <div class="card">
+                <h3>Penalizações Aplicadas</h3>
+                <p><?php echo $penalizacoesTotal; ?></p>
+            </div>
+        </div>
+
     </div>
 </body>
 </html>
