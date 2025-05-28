@@ -166,6 +166,18 @@ $conn->close();
 
     <div class="content">
         <h1>Mapa</h1>
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label for="tipo">Tipo de Produto:</label>
+            <select id="tipo" name="tipo">
+                <option value="">Todos</option>
+                <option value="eletronicos">Eletrônicos</option>
+                <option value="roupas">Roupas</option>
+                <option value="alimentos">Alimentos</option>
+                <option value="moveis">Móveis</option>
+                <option value="outros">Outros</option>
+            </select>
+        </div>
+
 
         <div class="radius-control">
             <label for="radiusRange">Raio: <span id="radiusValue">5</span> km</label>
@@ -246,6 +258,8 @@ async function atualizarMarcadores(raio) {
     lojaMarkers.forEach(marker => map.removeLayer(marker));
     lojaMarkers = [];
 
+    const tipoSelecionado = document.getElementById('tipo').value;
+
     for (const loja of lojas) {
         const enderecoCompleto = `${loja.endereco}, ${loja.numero}, Paraná, Brasil`;
         const coords = await geocodeEndereco(enderecoCompleto);
@@ -256,11 +270,16 @@ async function atualizarMarcadores(raio) {
                 const promocoes = await obterPromocoesDaLoja(loja.nomeLoja, loja.endereco, loja.numero);
                 const promocoesAtivas = promocoes.filter(p => p.quantidade > 0);
 
-                if (promocoesAtivas.length > 0) {
+                // Filtro por tipo se selecionado
+                const promocoesFiltradas = tipoSelecionado
+                    ? promocoesAtivas.filter(p => p.tipo.toLowerCase() === tipoSelecionado.toLowerCase())
+                    : promocoesAtivas;
+
+                if (promocoesFiltradas.length > 0) {
                     let popupContent = `<strong><a href="produtos_loja.php?id_loja=${loja.id_loja}" style="color:black; text-decoration:none;">${loja.nomeLoja}</a></strong><br>${enderecoCompleto}<br>`;
                     popupContent += '<h4>Promoções Ativas:</h4><ul>';
 
-                    promocoesAtivas.forEach(promo => {
+                    promocoesFiltradas.forEach(promo => {
                         popupContent += `<li>${promo.nomeProduto} - De: R$ ${promo.precoInicial} Por: R$ ${promo.precoPromocional}</li>`;
                     });
 
@@ -274,7 +293,6 @@ async function atualizarMarcadores(raio) {
     Denunciar
 </button>`;
 
-
                     const marker = L.marker([coords.lat, coords.lon])
                         .addTo(map)
                         .bindPopup(popupContent);
@@ -284,6 +302,7 @@ async function atualizarMarcadores(raio) {
         }
     }
 }
+
 
 
 function abrirFormularioDenuncia(nome, endereco, numero) {
@@ -365,6 +384,14 @@ document.getElementById('radiusRange').addEventListener('input', function() {
         atualizarMarcadores(raio);
     }
 });
+
+document.getElementById('tipo').addEventListener('change', function() {
+    const raio = parseInt(document.getElementById('radiusRange').value);
+    if (userLat !== null && userLon !== null) {
+        atualizarMarcadores(raio);
+    }
+});
+
 </script>
 </body>
 </html>
