@@ -39,6 +39,17 @@ $conn->close();
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
 
+        .navbar {
+            background-color: #333;
+            padding: 10px 20px;
+            color: white;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1001;
+        }
+
         .controls-container {
             position: absolute;
             top: 80px;
@@ -197,6 +208,7 @@ $conn->close();
         }
 
         #map {
+            z-index: 1;
             height: 600px;
             width: 100%;
             margin: 20px auto;
