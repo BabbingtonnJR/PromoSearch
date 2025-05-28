@@ -39,6 +39,97 @@ $conn->close();
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
 
+        .controls-container {
+            position: absolute;
+            top: 80px;
+            width: 100%;
+            display: flex;
+            justify-content: start;
+            gap: 20px;
+            z-index: 1000;
+            flex-wrap: wrap;
+        }
+
+
+        .radius-control, .filter-control {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radius-control label,
+        .filter-control label {
+            font-weight: bold;
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+
+        .radius-control input[type=range] {
+            width: 150px;
+        }
+
+        .filter-control select {
+            padding: 6px 10px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            font-size: 14px;
+            color: #333;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .filter-control select:focus {
+            border-color: #007BFF;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+        }
+
+        .filter-control select:hover {
+            background-color: #fff;
+        }
+
+        .form-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        background-color: #fff;
+        padding: 10px 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        max-width: 400px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-group select {
+            padding: 8px 12px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            font-size: 14px;
+            color: #333;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group select:focus {
+            border-color: #007BFF;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+        }
+
+        .form-group select:hover {
+            background-color: #fff;
+        }
+
         #formDenuncia {
             display: none;
             position: fixed;
@@ -113,21 +204,6 @@ $conn->close();
             border-radius: 8px;
         }
 
-        #radiusSlider {
-            width: 100%;
-            margin-top: 5px;
-        }
-
-        .radius-control {
-            position: absolute;
-            top: 80px;
-            left: 20px;
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            z-index: 1000;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
 
         ul li a{
             font-family: arial;
@@ -166,11 +242,26 @@ $conn->close();
 
     <div class="content">
         <h1>Mapa</h1>
+        <div class="controls-container">
+            <div class="radius-control">
+                <label for="radiusRange">Raio:</label>
+                <span id="radiusValue">5</span> km
+                <input type="range" id="radiusRange" min="1" max="50" value="5" step="1">
+            </div>
 
-        <div class="radius-control">
-            <label for="radiusRange">Raio: <span id="radiusValue">5</span> km</label>
-            <input type="range" id="radiusRange" min="1" max="50" value="5" step="1">
+            <div class="filter-control">
+                <label for="tipo">Tipo:</label>
+                <select id="tipo" name="tipo">
+                    <option value="">Todos</option>
+                    <option value="eletronicos">Eletrônicos</option>
+                    <option value="roupas">Roupas</option>
+                    <option value="alimentos">Alimentos</option>
+                    <option value="moveis">Móveis</option>
+                    <option value="outros">Outros</option>
+                </select>
+            </div>
         </div>
+
 
         <div id="map"></div>
     </div>
@@ -197,6 +288,27 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     subdomains: 'abcd',
     maxZoom: 19
 }).addTo(map);
+
+const userIcon = L.icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
+const lojaIcon = L.icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
+
+
 
 const lojas = <?php echo json_encode($lojas); ?>;
 let userLat = null;
@@ -246,6 +358,8 @@ async function atualizarMarcadores(raio) {
     lojaMarkers.forEach(marker => map.removeLayer(marker));
     lojaMarkers = [];
 
+    const tipoSelecionado = document.getElementById('tipo').value;
+
     for (const loja of lojas) {
         const enderecoCompleto = `${loja.endereco}, ${loja.numero}, Paraná, Brasil`;
         const coords = await geocodeEndereco(enderecoCompleto);
@@ -256,11 +370,15 @@ async function atualizarMarcadores(raio) {
                 const promocoes = await obterPromocoesDaLoja(loja.nomeLoja, loja.endereco, loja.numero);
                 const promocoesAtivas = promocoes.filter(p => p.quantidade > 0);
 
-                if (promocoesAtivas.length > 0) {
+                const promocoesFiltradas = tipoSelecionado
+                    ? promocoesAtivas.filter(p => p.tipo.toLowerCase() === tipoSelecionado.toLowerCase())
+                    : promocoesAtivas;
+
+                if (promocoesFiltradas.length > 0) {
                     let popupContent = `<strong><a href="produtos_loja.php?id_loja=${loja.id_loja}" style="color:black; text-decoration:none;">${loja.nomeLoja}</a></strong><br>${enderecoCompleto}<br>`;
                     popupContent += '<h4>Promoções Ativas:</h4><ul>';
 
-                    promocoesAtivas.forEach(promo => {
+                    promocoesFiltradas.forEach(promo => {
                         popupContent += `<li>${promo.nomeProduto} - De: R$ ${promo.precoInicial} Por: R$ ${promo.precoPromocional}</li>`;
                     });
 
@@ -274,8 +392,7 @@ async function atualizarMarcadores(raio) {
     Denunciar
 </button>`;
 
-
-                    const marker = L.marker([coords.lat, coords.lon])
+                    const marker = L.marker([coords.lat, coords.lon], { icon: lojaIcon })
                         .addTo(map)
                         .bindPopup(popupContent);
                     lojaMarkers.push(marker);
@@ -284,6 +401,7 @@ async function atualizarMarcadores(raio) {
         }
     }
 }
+
 
 
 function abrirFormularioDenuncia(nome, endereco, numero) {
@@ -335,7 +453,7 @@ if (navigator.geolocation) {
         userLat = position.coords.latitude;
         userLon = position.coords.longitude;
 
-        const userMarker = L.marker([userLat, userLon])
+        const userMarker = L.marker([userLat, userLon], { icon: userIcon })
             .addTo(map)
             .bindPopup("Você está aqui!")
             .openPopup();
@@ -353,7 +471,6 @@ if (navigator.geolocation) {
         timeout: 10000,
         maximumAge: 0
     });
-
 } else {
     alert("Geolocalização não é suportada pelo seu navegador.");
 }
@@ -365,6 +482,14 @@ document.getElementById('radiusRange').addEventListener('input', function() {
         atualizarMarcadores(raio);
     }
 });
+
+document.getElementById('tipo').addEventListener('change', function() {
+    const raio = parseInt(document.getElementById('radiusRange').value);
+    if (userLat !== null && userLon !== null) {
+        atualizarMarcadores(raio);
+    }
+});
+
 </script>
 </body>
 </html>
