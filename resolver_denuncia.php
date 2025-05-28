@@ -129,7 +129,6 @@ if (!$denuncia) {
                         <option value="ajustar_promocao">Ajustar Promoção</option>
                         <option value="banimento_temporario">Banimento Temporário</option>
                         <option value="banimento_permanente">Banimento Permanente</option>
-                        <option value="contatar_cliente">Contatar Cliente</option>
                         <option value="outra">Outra Ação</option>
                     </select>
                 </div>

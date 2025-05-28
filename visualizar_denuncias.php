@@ -13,7 +13,7 @@ $sql = "SELECT
             d.descricao AS denuncia_desc,
             d.estado,
             d.dataDenuncia,
-            u.nome AS cliente_nome,
+            u.login AS cliente_login,
             u.email AS cliente_email,
             p.nomeProduto,
             p.precoPromocional,
@@ -88,7 +88,7 @@ $result = $conn->query($sql);
                             <td><?= htmlspecialchars($row['denuncia_id']) ?></td>
                             <td><?= htmlspecialchars($row['dataDenuncia']) ?></td>
                             <td>
-                                <?= htmlspecialchars($row['cliente_nome']) ?><br>
+                                <?= htmlspecialchars($row['cliente_login']) ?><br>
                                 <small><?= htmlspecialchars($row['cliente_email']) ?></small>
                             </td>
                             <td><?= htmlspecialchars($row['nomeProduto']) ?></td>

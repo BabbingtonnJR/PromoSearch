@@ -41,7 +41,7 @@ include "connection.php";
                     <ul class="dropdown-content">
                         <li><a href="gerenciar_usuarios.php">Gerenciar Usuários</a></li>
                         <li><a href="visualizar_denuncias.php">Visualizar Denúncias</a></li>
-                        <li><a href="#">Histórico de Penalizações</a></li>
+                        <li><a href="historico_penalizacoes.php">Histórico de Penalizações</a></li>
                         <li><a href="logout.php">Sair</a></li>
                     </ul>
                 </li>

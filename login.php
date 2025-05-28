@@ -11,14 +11,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $senha = trim($_POST['txtPsw']);
     $tipo_selecionado = $_POST['tipo_usuario'] ?? '';
 
-    $stmt = $conn->prepare("SELECT id, senha FROM Usuario WHERE login = ?");
+    $stmt = $conn->prepare("SELECT id, senha, banido_ate FROM Usuario WHERE login = ?");
     $stmt->bind_param("s", $login);
     $stmt->execute();
     $stmt->store_result();
-    
+
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($id_usuario, $senha_hash);
+        $stmt->bind_result($id_usuario, $senha_hash, $banido_ate);
         $stmt->fetch();
+
+        if (!is_null($banido_ate) && strtotime($banido_ate) > time()) {
+            $data_formatada = date('d/m/Y', strtotime($banido_ate));
+?>
+<script>
+    alert('Você está banido até <?php echo $data_formatada; ?>.');
+    window.history.go(-1);
+</script>
+<?php
+            exit();
+        }
 
         if (password_verify($senha, $senha_hash)) {
             $stmt_tipo = $conn->prepare("SELECT id FROM $tipo_selecionado WHERE id_usuario = ?");
@@ -68,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </script>
 <?php
     }
-    
+
     $stmt->close();
     $conn->close();
 } else {
