@@ -54,6 +54,20 @@ $result = $conn->query($sql);
             text-decoration: none;
             color: white;
         }   
+
+        body .back-button-container .btn-voltar {
+            position: fixed;
+            top: 90px;
+            left: 20px;
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 999;
+        }
+
     </style>
 </head>
 <body>
@@ -81,6 +95,10 @@ $result = $conn->query($sql);
             </ul>
         </div>
     </nav>
+
+    <div class="back-button-container">
+        <button onclick="window.history.back()" class="btn-voltar">← Voltar</button>
+    </div>
 
     <div class="content">
         <h1>Visualizar Denúncias</h1>

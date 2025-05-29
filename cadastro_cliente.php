@@ -10,7 +10,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $telefone = trim($_POST['telefone']);
     $email = trim($_POST['email']);
     $usuario = trim($_POST['usuario']);
-    $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
+    $senha = trim($_POST['senha']);
+
 
     if ($_POST['senha'] !== $_POST['repetir_senha']) {
 ?>
@@ -21,6 +22,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php
         exit();
     }
+
+    else if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', $senha)) {
+?>
+<script>
+    alert('Erro: A senha deve ter no mínimo 8 caracteres, incluindo letra maiúscula, minúscula, número e caractere especial.');
+    history.go(-1);
+</script>
+<?php
+        exit();
+    }
+
+    $senha = password_hash($senha, PASSWORD_DEFAULT);
+    
 
     $sql_check = $conn->prepare("SELECT COUNT(*) FROM Usuario WHERE login = ? OR email = ?");
     $sql_check->bind_param("ss", $usuario, $email);
