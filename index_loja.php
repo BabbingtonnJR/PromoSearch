@@ -44,7 +44,8 @@ $conn->close();
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         #map {
-            height: 600px;
+            z-index: 0;
+            height: 710px;
             width: 100%;
             margin: 20px auto;
             border: 2px solid #333;
