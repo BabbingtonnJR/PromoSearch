@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    else if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', $senha)) {
+    if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', $senha)) {
 ?>
 <script>
     alert('Erro: A senha deve ter no mínimo 8 caracteres, incluindo letra maiúscula, minúscula, número e caractere especial.');
@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    else if (!preg_match('/^\d{3}\.\d{3}\.\d{3}-\d{2}$/', $cnpj)) {
+    if (!preg_match('/^\d{14}$/', $cnpj)) {
 ?>
 <script>
     alert('Erro: Formato de CNPJ inválido.');
@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    else if (!preg_match('/^\(\d{2}\) \d{5}-\d{4}$/', $telefone)) {
+    if (!preg_match('/^\(\d{2}\) \d{5}-\d{4}$/', $telefone)) {
 ?>
 <script>
     alert('Erro: Formato de telefone inválido.');
