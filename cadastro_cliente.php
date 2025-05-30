@@ -33,6 +33,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
+    else if (!preg_match('/^\d{3}\.\d{3}\.\d{3}-\d{2}$/', $cpf)) {
+?>
+<script>
+    alert('Erro: Formato de CPF inválido.');
+    history.go(-1);
+</script>
+<?php
+        exit();
+    }
+
+    else if (!preg_match('/^\(\d{2}\) \d{5}-\d{4}$/', $telefone)) {
+?>
+<script>
+    alert('Erro: Formato de telefone inválido.');
+    history.go(-1);
+</script>
+<?php
+        exit();
+    }
+
     $senha = password_hash($senha, PASSWORD_DEFAULT);
     
 

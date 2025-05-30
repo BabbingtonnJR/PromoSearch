@@ -32,10 +32,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php
         exit();
     }
+
+    else if (!preg_match('/^\d{3}\.\d{3}\.\d{3}-\d{2}$/', $cnpj)) {
+?>
+<script>
+    alert('Erro: Formato de CNPJ inválido.');
+    history.go(-1);
+</script>
+<?php
+        exit();
+    }
+
+    else if (!preg_match('/^\(\d{2}\) \d{5}-\d{4}$/', $telefone)) {
+?>
+<script>
+    alert('Erro: Formato de telefone inválido.');
+    history.go(-1);
+</script>
+<?php
+        exit();
+    }
+    
         
     $senha = password_hash($senha, PASSWORD_DEFAULT);
 
-    
+
     $sql_check = $conn->prepare("SELECT COUNT(*) FROM Usuario WHERE login = ? OR email = ?");
     $sql_check->bind_param("ss", $usuario, $email);
     $sql_check->execute();
