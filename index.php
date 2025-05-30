@@ -208,8 +208,8 @@ $conn->close();
         }
 
         #map {
-            z-index: 1;
-            height: 600px;
+            z-index: 0;
+            height: 710px;
             width: 100%;
             margin: 20px auto;
             border: 2px solid #333;
