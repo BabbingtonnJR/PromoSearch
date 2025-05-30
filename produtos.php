@@ -102,6 +102,20 @@ if ($row_loja = mysqli_fetch_assoc($result_loja)) {
         li {
             list-style-type: none;
         }
+
+        body .back-button-container .btn-voltar {
+            position: relative;
+            top: 0;
+            left: 0;
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
     </style>
 </head>
 <body>
@@ -114,8 +128,8 @@ if ($row_loja = mysqli_fetch_assoc($result_loja)) {
                 <li class="dropdown">
                     <button class="dropdown-btn">Menu</button>
                     <ul class="dropdown-content">
-                        <li><a href="produtos.php">Promoções</a></li>
                         <li><a href="index_loja.php">Mapa</a></li>
+                        <li><a href="produtos.php">Promoções</a></li>
                         <li><a href="logout.php">Sair</a></li>
                     </ul>
                 </li>
@@ -129,18 +143,15 @@ if ($row_loja = mysqli_fetch_assoc($result_loja)) {
     </nav>
 
     <div class="content">
+        <div class="back-button-container">
+            <button onclick="window.history.back()" class="btn-voltar">← Voltar</button>
+        </div>
         <div class="products-header">
             <h2>Promoções Cadastradas</h2>
             <br>
             <a href="cadastrar_promocao.php" class="add-promotion-btn">Adicionar Promoção</a>
-            <button id="toggleSelection" class="add-promotion-btn">Selecionar Promoções</button>
         </div>
         
-        <div class="selection-controls" id="selectionControls">
-            <span id="selectedCount">0 selecionadas</span>
-            <button id="publishBtn" class="add-promotion-btn" disabled>Publicar Promoções</button>
-            <button id="cancelSelection" class="delete-button">Cancelar</button>
-        </div>
         <br>
 
         <div class="product-grid">
@@ -179,99 +190,12 @@ if ($row_loja = mysqli_fetch_assoc($result_loja)) {
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggleSelection = document.getElementById('toggleSelection');
-            const selectionControls = document.getElementById('selectionControls');
-            const selectedCount = document.getElementById('selectedCount');
-            const publishBtn = document.getElementById('publishBtn');
-            const cancelSelection = document.getElementById('cancelSelection');
-            const productCards = document.querySelectorAll('.product-card');
-            
-            let selectedProducts = [];
-            let isSelectionMode = false;
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const backBtn = document.querySelector('.btn-voltar');
+        backBtn.addEventListener('click', () => window.history.back());
+    });
+</script>
 
-            toggleSelection.addEventListener('click', function() {
-                isSelectionMode = !isSelectionMode;
-                selectionControls.style.display = isSelectionMode ? 'block' : 'none';
-                selectedProducts = [];
-                updateSelectionUI();
-                
-                productCards.forEach(card => {
-                    if (isSelectionMode) {
-                        card.style.cursor = 'pointer';
-                    } else {
-                        card.classList.remove('selected');
-                        card.style.cursor = '';
-                    }
-                });
-            });
-
-            cancelSelection.addEventListener('click', function() {
-                isSelectionMode = false;
-                selectionControls.style.display = 'none';
-                selectedProducts = [];
-                updateSelectionUI();
-                
-                productCards.forEach(card => {
-                    card.classList.remove('selected');
-                    card.style.cursor = '';
-                });
-            });
-
-            productCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    if (!isSelectionMode) return;
-                    
-                    const productId = card.dataset.id;
-                    const index = selectedProducts.indexOf(productId);
-                    
-                    if (index === -1) {
-                        if (selectedProducts.length < 3) {
-                            selectedProducts.push(productId);
-                            card.classList.add('selected');
-                        }
-                    } else {
-                        selectedProducts.splice(index, 1);
-                        card.classList.remove('selected');
-                    }
-                    
-                    updateSelectionUI();
-                });
-            });
-
-            publishBtn.addEventListener('click', function() {
-                if (selectedProducts.length === 0) return;
-                
-                fetch('publicar_promocoes.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        promocoes: selectedProducts
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Promoções publicadas com sucesso!');
-                        window.location.reload();
-                    } else {
-                        alert('Erro ao publicar promoções: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Erro ao publicar promoções');
-                });
-            });
-
-            function updateSelectionUI() {
-                selectedCount.textContent = `${selectedProducts.length} selecionada(s) (máx. 3)`;
-                publishBtn.disabled = selectedProducts.length === 0;
-            }
-        });
-    </script>
 </body>
 </html>

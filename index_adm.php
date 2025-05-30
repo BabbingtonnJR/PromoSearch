@@ -27,7 +27,7 @@ $penalizacoesTotal = $conn->query($sql)->fetch_row()[0];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrador - Página Inicial</title>
+    <title>Painel de Controle</title>
     <link rel="stylesheet" href="styles_adm.css">
 
     <style>

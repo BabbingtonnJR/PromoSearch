@@ -39,7 +39,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PromoSearch - Mapa</title>
+    <title>Mapa</title>
     <link rel="stylesheet" href="styles_loja.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
@@ -74,8 +74,8 @@ $conn->close();
                 <li class="dropdown">
                     <button class="dropdown-btn">Menu</button>
                     <ul class="dropdown-content">
-                        <li><a href="produtos.php">Produtos</a></li>
                         <li><a href="index_loja.php">Mapa</a></li>
+                        <li><a href="produtos.php">Promoções</a></li>
                         <li><a href="logout.php">Sair</a></li>
                     </ul>
                 </li>
