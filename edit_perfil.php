@@ -25,39 +25,51 @@ if ($stmt->num_rows > 0) {
 }
 
 if (isset($_POST['update'])) {
-    $nome_novo = $_POST['nome'];
-    $endereco_novo = $_POST['endereco'];
-    $numresicencia_novo = $_POST['numero'];
-    $telefone_novo = $_POST['telefone'];
-    $email_novo = $_POST['email'];
+    $nome_novo = trim($_POST['nome']);
+    $endereco_novo = trim($_POST['endereco']);
+    $numresicencia_novo = trim($_POST['numero']);
+    $telefone_novo = trim($_POST['telefone']);
+    $email_novo = trim($_POST['email']);
 
-    $foto_binaria = null;
-    $tem_foto = false;
+    $check_sql = "SELECT id FROM Usuario WHERE email = ? AND id != ?";
+    $check_stmt = $conn->prepare($check_sql);
+    $check_stmt->bind_param("si", $email_novo, $id);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result();
 
-    if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-        $foto_tmp = $_FILES['foto']['tmp_name'];
-        $foto_binaria = file_get_contents($foto_tmp);
-        $tem_foto = true;
-    }
-
-    if ($tem_foto) {
-        $update_sql = "UPDATE Usuario SET nome = ?, endereco = ?, numero = ?, telefone = ?, email = ?, foto = ? WHERE id = ?";
-        $update_stmt = $conn->prepare($update_sql);
-        $update_stmt->bind_param("ssssssi", $nome_novo, $endereco_novo, $numresicencia_novo, $telefone_novo, $email_novo, $foto_binaria, $id);
+    if ($check_result->num_rows > 0) {
+        echo "<script>alert('Este email já está em uso por outro usuário.');</script>";
     } else {
-        $update_sql = "UPDATE Usuario SET nome = ?, endereco = ?, numero = ?, telefone = ?, email = ? WHERE id = ?";
-        $update_stmt = $conn->prepare($update_sql);
-        $update_stmt->bind_param("sssssi", $nome_novo, $endereco_novo, $numresicencia_novo, $telefone_novo, $email_novo, $id);
+        $foto_binaria = null;
+        $tem_foto = false;
+
+        if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+            $foto_tmp = $_FILES['foto']['tmp_name'];
+            $foto_binaria = file_get_contents($foto_tmp);
+            $tem_foto = true;
+        }
+
+        if ($tem_foto) {
+            $update_sql = "UPDATE Usuario SET nome = ?, endereco = ?, numero = ?, telefone = ?, email = ?, foto = ? WHERE id = ?";
+            $update_stmt = $conn->prepare($update_sql);
+            $update_stmt->bind_param("ssssssi", $nome_novo, $endereco_novo, $numresicencia_novo, $telefone_novo, $email_novo, $foto_binaria, $id);
+        } else {
+            $update_sql = "UPDATE Usuario SET nome = ?, endereco = ?, numero = ?, telefone = ?, email = ? WHERE id = ?";
+            $update_stmt = $conn->prepare($update_sql);
+            $update_stmt->bind_param("sssssi", $nome_novo, $endereco_novo, $numresicencia_novo, $telefone_novo, $email_novo, $id);
+        }
+
+        if ($update_stmt->execute()) {
+            echo "<script>alert('Perfil atualizado com sucesso!'); window.location.href='perfil.php';</script>";
+            exit();
+        } else {
+            echo "<script>alert('Erro ao atualizar o perfil');</script>";
+        }
+
+        $update_stmt->close();
     }
 
-    if ($update_stmt->execute()) {
-        echo "<script>alert('Perfil atualizado com sucesso!'); window.location.href='perfil.php';</script>";
-        exit();
-    } else {
-        echo "<script>alert('Erro ao atualizar o perfil');</script>";
-    }
-
-    $update_stmt->close();
+    $check_stmt->close();
 }
 
 $stmt->close();
